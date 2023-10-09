@@ -1,0 +1,18 @@
+{
+  "name": "astra-backend",
+  "version": "1.0.0",
+  "description": "The backend APIs for project ASTRA",
+  "main": "index.js",
+  "scripts": {
+    "verify": "node verifyMail.js",
+    "start": "node index.js"
+  },
+  "author": "rana",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.6"
+  }
+}
