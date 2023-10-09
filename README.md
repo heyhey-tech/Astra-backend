@@ -29,10 +29,10 @@ To get started with the API server, follow these steps:
 
    Replace `your_email_address` and `your_email_password` with your email address and password. The `PORT` variable is optional and defaults to 3000 if not set.
 
-4. Start the API server to verify Mails:
+4. Start the API server
 
     ```bash
-    npm verify
+    npm start
     ```
 
    The server should now be running on [http://localhost:3000](http://localhost:3000).
@@ -43,13 +43,14 @@ The API server provides the following endpoints:
 
 ### POST /verify-email
 
-This endpoint receives an email address in the request body and sends a verification email to the address. The email contains a verification code that the user must enter to verify their email address.
+This endpoint receives an email address and password in the request body and sends a verification email to the address. The email contains a verification code that the user must enter to verify their email address.
 
 **Request Body:**
 
 ```json
 {
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "password": "userPassword"
 }
 ```
 
@@ -60,7 +61,7 @@ This endpoint receives an email address in the request body and sends a verifica
 - 500 Internal Server Error if there was an error while sending the email.
 
 ### POST /verify-code
-This endpoint receives a verification code in the request body and compares it with the code sent in the verification email. If the codes match, the email address is considered verified.
+This endpoint receives a verification code in the request body and compares it with the code sent in the verification email. If the codes match, the email address is considered verified, the user is considered registered and the email and password are saved in the database.
 
 **Request Body;**
 

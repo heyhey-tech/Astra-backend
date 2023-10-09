@@ -4,7 +4,6 @@
   "description": "The backend APIs for project ASTRA",
   "main": "index.js",
   "scripts": {
-    "verify": "node verifyMail.js",
     "start": "node index.js"
   },
   "author": "rana",

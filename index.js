@@ -12,16 +12,17 @@ dotenv.config();
 app.use(bodyParser.json());
 
 // Endpoint to receive email address from user
-app.post('/verify-email', async (req, res) => {
+app.post('/register', async (req, res) => {
     const email = req.body.email;
+    const password = req.body.password;
 
     // Validate email format
     if (!isValidEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
+    // Send verification email
     try {
-        // Send verification email
         const verificationCode = generateVerificationCode();
         await sendVerificationEmail(email, verificationCode);
 
@@ -31,6 +32,9 @@ app.post('/verify-email', async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
     }
+
+    // TODO: Save email, password, verification code, and timestamp to temporary database
+    // If a record exists in the database with the same email address, update the record
 });
 
 // Endpoint to receive verification code from user
@@ -38,14 +42,15 @@ app.post('/verify-code', (req, res) => {
     const code = req.body.code;
 
     // Compare verification code with code sent in email
-    // TODO: Store verification code in database and compare
-    // if (code !== verificationCode) {
     if (code !== 123456) {
+    // if (code !== verificationCode) {
         return res.status(400).json({ error: 'Invalid verification code' });
     }
 
+    // TODO: Move the email, password, and timestamp from temporary database to permanent database
+
     // Return success message
-    return res.status(200).json({ message: 'Email verified' });
+    return res.status(200).json({ message: 'Email verified and user Registered!' });
 });
 
 // Helper function to validate email format
