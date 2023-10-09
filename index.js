@@ -2,9 +2,11 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-
 const app = express();
-
+const addVerifyCodeToRDS = require('./Scripts/addTemp');
+const getCodeFromRDS = require('./Scripts/getCode');
+const deleteRowsFromRDS = require('./Scripts/removeTemp');
+const addUserToRDS = require('./Scripts/addUser_client');
 // Load environment variables from .env file
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.post('/register', async (req, res) => {
     try {
         const verificationCode = generateVerificationCode();
         await sendVerificationEmail(email, verificationCode);
+        
+        addVerifyCodeToRDS(email,verificationCode);
 
         // Return success message
         return res.status(200).json({ message: 'Verification email sent' });
@@ -40,16 +44,32 @@ app.post('/register', async (req, res) => {
 // Endpoint to receive verification code from user
 app.post('/verify-code', (req, res) => {
     const code = req.body.code;
+    const email = req.body.email;
 
-    // Compare verification code with code sent in email
-    if (code !== 123456) {
-    // if (code !== verificationCode) {
-        return res.status(400).json({ error: 'Invalid verification code' });
-    }
+
+    getCodeFromRDS(email)
+    .then((result) => {
+        if (code !== result) {
+                return res.status(400).json({ error: 'Invalid verification code' });
+            }else{
+                deleteRowsFromRDS(email)
+                .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
+                .catch((error) => console.error(error));
+
+                addUserToRDS(email,email,password)
+                return res.status(200).json({ message: 'Verification code is correct' });
+
+                }
+            }
+        )
+    .catch((error) => {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error while fetching verification code' });
+        }
+    )
 
     // TODO: Move the email, password, and timestamp from temporary database to permanent database
-
-    // Return success message
+    // // Return success message
     return res.status(200).json({ message: 'Email verified and user Registered!' });
 });
 
@@ -65,8 +85,8 @@ function isValidEmail(email) {
 // Helper function to generate verification code
 function generateVerificationCode() {
     // Generate random 6-digit code
-    // return Math.floor(100000 + Math.random() * 900000);
-    return 123456;
+    return Math.floor(100000 + Math.random() * 900000);
+    // return 123456;
 }
 
 // Get email and password from environment variables
