@@ -41,7 +41,7 @@ To get started with the API server, follow these steps:
 
 The API server provides the following endpoints:
 
-### POST /verify-email
+### POST /register
 
 This endpoint receives an email address and password in the request body and sends a verification email to the address. The email contains a verification code that the user must enter to verify their email address.
 
