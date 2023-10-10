@@ -24,6 +24,9 @@ app.post('/register', async (req, res) => {
     if (!isValidEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
+    if (!isValidPassword(password)) {
+        return res.status(400).json({ error: 'Invalid password format' });
+    }
 
     // Send verification email
     try {
@@ -47,6 +50,7 @@ app.post('/register', async (req, res) => {
 app.post('/verify-code', (req, res) => {
     const code = req.body.code;
     const email = req.body.email;
+    const password = req.body.password;
 
 
     getCodeFromRDS(email)
@@ -89,6 +93,15 @@ function generateVerificationCode() {
     // Generate random 6-digit code
     return Math.floor(100000 + Math.random() * 900000);
     // return 123456;
+}
+
+// password verification function
+function isValidPassword(password) {
+    // Regular expression pattern for a valid email address
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+  
+    // Test the email against the pattern
+    return passwordPattern.test(password);
 }
 
 // Get email and password from environment variables
