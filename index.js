@@ -3,15 +3,17 @@ const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const app = express();
-const addVerifyCodeToRDS = require('./Scripts/addTemp');
-const getCodeFromRDS = require('./Scripts/getCode');
-const deleteRowsFromRDS = require('./Scripts/removeTemp');
-const addUserToRDS = require('./Scripts/addUser_client');
+const addVerifyCodeToRDS = require('./Scripts/addTemp.js');
+const getCodeFromRDS = require('./Scripts/getCode.js');
+const deleteRowsFromRDS = require('./Scripts/removeTemp.js');
+const addUserToRDS = require('./Scripts/addUser_client.js');
 // Load environment variables from .env file
 dotenv.config();
 
 // Use body-parser middleware to parse request body
 app.use(bodyParser.json());
+
+app.get('/', (req, res) => {res.json('my api running');});
 
 // Endpoint to receive email address from user
 app.post('/register', async (req, res) => {
