@@ -5,8 +5,12 @@ const dotenv = require('dotenv');
 const app = express();
 const addVerifyCodeToRDS = require('./Scripts/addTemp.js');
 const getCodeFromRDS = require('./Scripts/getCode.js');
-const deleteRowsFromRDS = require('./Scripts/removeTemp.js');
+const deleteRowsFromRDSTemp = require('./Scripts/removeTemp.js');
 const addUserToRDS = require('./Scripts/addUser_client.js');
+const checkUserInDB = require('./Scripts/checkUserPresent.js');
+const getPasswordFromRDS = require('./Scripts/getPasswordFromTemp.js');
+const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -20,7 +24,7 @@ app.post('/register', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    // Validate email format
+    
     if (!isValidEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
@@ -28,12 +32,23 @@ app.post('/register', async (req, res) => {
         return res.status(400).json({ error: 'Invalid password format' });
     }
 
+    checkUserInDB(email).then((result) => {
+        if (result) {
+            return res.status(400).json({ error: 'User already exists' });
+        }}).catch((error) => {
+            console.error(error);
+            return res.status(500).json({ error: 'Internal server error while checking user' });
+        }
+    );
+
+
     // Send verification email
     try {
         const verificationCode = generateVerificationCode();
+
         await sendVerificationEmail(email, verificationCode);
         
-        addVerifyCodeToRDS(email,verificationCode);
+        addVerifyCodeToRDS(email,verificationCode,password);
 
         // Return success message
         return res.status(200).json({ message: 'Verification email sent' });
@@ -50,7 +65,8 @@ app.post('/register', async (req, res) => {
 app.post('/verify-code', (req, res) => {
     const code = req.body.code;
     const email = req.body.email;
-    const password = req.body.password;
+
+    // const password = req.body.password;
 
 
     getCodeFromRDS(email)
@@ -58,13 +74,19 @@ app.post('/verify-code', (req, res) => {
         if (code !== result) {
                 return res.status(400).json({ error: 'Invalid verification code' });
             }else{
-                deleteRowsFromRDS(email)
+                console.log("code is same as result");
+                getPasswordFromRDS(email).then((password) => {
+                    addUserToRDS(email,email,password);
+                }).catch((error) => {
+                    console.error(error);
+                    return res.status(500).json({ error: 'Internal server error while fetching password' });
+                });
+
+
+                deleteRowsFromRDSTemp(email)
                 .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
                 .catch((error) => console.error(error));
-
-                addUserToRDS(email,email,password)
-                return res.status(200).json({ message: 'Verification code is correct' });
-
+                return res.status(200).json({ message: 'Verification code is correct, New User Registered' });
                 }
             }
         )
@@ -74,15 +96,40 @@ app.post('/verify-code', (req, res) => {
         }
     )
 
-    // TODO: Move the email, password, and timestamp from temporary database to permanent database
-    // // Return success message
-    return res.status(200).json({ message: 'Email verified and user Registered!' });
 });
+
+app.post('/login', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    console.log("email:",email,"password:",password);
+
+    checkUserInDB(email).then((result) => {
+        console.log("result:",result);
+        if (result) {
+            getPasswordFromDB(email).then((result) => {
+                if (result === password) {
+                    return res.status(200).json({ message: 'User Logged In' });
+                }else{
+                    return res.status(400).json({ error: 'Invalid Password' });
+                }
+            }).catch((error) => {
+                console.error(error);
+                return res.status(500).json({ error: 'Internal server error while fetching password' });
+            });
+        }else{
+            return res.status(400).json({ error: 'User does not exist' });
+        }
+    }).catch((error) => {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error while checking user' });
+    });
+}
+);
 
 // Helper function to validate email format
 function isValidEmail(email) {
     // Regular expression pattern for a valid email address
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/;
   
     // Test the email against the pattern
     return emailPattern.test(email);
@@ -98,7 +145,8 @@ function generateVerificationCode() {
 // password verification function
 function isValidPassword(password) {
     // Regular expression pattern for a valid email address
-    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+
+    const passwordPattern = /.{8,}/;
   
     // Test the email against the pattern
     return passwordPattern.test(password);
@@ -110,6 +158,8 @@ const servicePass = process.env.PASS;
 
 // Helper function to send verification email
 function sendVerificationEmail(email, code) {
+    console.log(serviceEmail);
+    console.log(servicePass)
     // Create nodemailer transporter
     const transporter = nodemailer.createTransport({
         service: 'gmail',

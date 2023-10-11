@@ -11,7 +11,8 @@ function createTable() {
   const query = `
     CREATE TABLE IF NOT EXISTS Temp_Verify (
       email VARCHAR(255) NOT NULL,
-      code VARCHAR(255) NOT NULL
+      code VARCHAR(255) NOT NULL,
+      password VARCHAR(255) NOT NULL
     )`;
 
   return new Promise((resolve, reject) => {
@@ -28,4 +29,4 @@ function createTable() {
 
 module.exports = createTable;
 
-// createTable();
+createTable();

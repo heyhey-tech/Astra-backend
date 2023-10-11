@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 
-function addVerifyCodeToRDS(email, code) {
+function addVerifyCodeToRDS(email, code,_password) {
+    console.log('here:password is:',_password);
   const connection = mysql.createConnection({
     host: 'project-astra-rds.c5y9t5m5qhwe.ap-south-1.rds.amazonaws.com',
     user: 'admin',
@@ -29,8 +30,9 @@ function addVerifyCodeToRDS(email, code) {
         connection.end();
       });
     } else {
-      const insertQuery = `INSERT INTO Temp_Verify (email, code) VALUES ('${email}','${code}')`;
+      const insertQuery = `INSERT INTO Temp_Verify (email, code, password) VALUES ('${email}','${code}','${_password}')`;
 
+      console.log(insertQuery);
       connection.query(insertQuery, (error, results, fields) => {
         if (error) {
           console.error(error);

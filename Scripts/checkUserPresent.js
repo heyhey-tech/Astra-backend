@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-function deleteRowsFromRDSTemp(email) {
+function checkUserInDB(email) {
   const connection = mysql.createConnection({
     host: 'project-astra-rds.c5y9t5m5qhwe.ap-south-1.rds.amazonaws.com',
     user: 'admin',
@@ -8,23 +8,23 @@ function deleteRowsFromRDSTemp(email) {
     database: 'astraDB',
   });
 
-  console.log("deleteing from temp table:",email);
-  const query = `DELETE FROM Temp_Verify WHERE email='${email}'`;
+  const query = `SELECT email FROM organisations WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     connection.query(query, (error, results, fields) => {
       if (error) {
         reject(error);
+      } else if (results.length === 0) {
+        resolve(false);
       } else {
-        resolve(results.affectedRows);
+        resolve(true);
       }
       connection.end();
     });
   });
 }
 
-module.exports = deleteRowsFromRDSTemp;
+module.exports = checkUserInDB;
 
-// deleteRowsFromRDS('hello@gmail.com')
-//   .then((affectedRows) => console.log(`${affectedRows} rows deleted`))
-//   .catch((error) => console.error(error));
+// getCodeFromRDS('hello@gmail.com')
+//   .then((code) => console.log(code))
