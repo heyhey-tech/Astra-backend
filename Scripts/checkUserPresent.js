@@ -8,7 +8,7 @@ function checkUserInDB(email) {
     database: 'astraDB',
   });
 
-  const query = `SELECT email FROM organisations WHERE email='${email}'`;
+  const query = `SELECT email FROM users WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     connection.query(query, (error, results, fields) => {

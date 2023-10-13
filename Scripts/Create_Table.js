@@ -9,7 +9,7 @@ function createTable() {
   });
 
   const query = `
-    CREATE TABLE IF NOT EXISTS organisations (
+    CREATE TABLE IF NOT EXISTS Users (
       id INT AUTO_INCREMENT PRIMARY KEY,
       email VARCHAR(255) NOT NULL,
       name VARCHAR(255) NOT NULL,

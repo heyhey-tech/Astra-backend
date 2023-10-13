@@ -6,10 +6,12 @@ const app = express();
 const addVerifyCodeToRDS = require('./Scripts/addTemp.js');
 const getCodeFromRDS = require('./Scripts/getCode.js');
 const deleteRowsFromRDSTemp = require('./Scripts/removeTemp.js');
-const addUserToRDS = require('./Scripts/addUser_client.js');
+const addUserToRDS = require('./Scripts/add_client.js');
 const checkUserInDB = require('./Scripts/checkUserPresent.js');
 const getPasswordFromRDS = require('./Scripts/getPasswordFromTemp.js');
 const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
+const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -20,7 +22,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {res.json('my api running');});
 
 // Endpoint to receive email address from user
-app.post('/register', async (req, res) => {
+app.post('/user/register', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -32,15 +34,16 @@ app.post('/register', async (req, res) => {
         return res.status(400).json({ error: 'Invalid password format' });
     }
 
-    checkUserInDB(email).then((result) => {
-        if (result) {
-            return res.status(400).json({ error: 'User already exists' });
-        }}).catch((error) => {
-            console.error(error);
-            return res.status(500).json({ error: 'Internal server error while checking user' });
-        }
-    );
+    // await checkUserInDB(email).then((result) => {
+    //     if (result) {
+    //         return res.status(400).json({ error: 'User already exists' });
+    //     }});
 
+
+    const result=await checkUserInDB(email);
+    if (result) {
+        return res.status(400).json({ error: 'User already exists' });
+    }
 
     // Send verification email
     try {
@@ -61,8 +64,10 @@ app.post('/register', async (req, res) => {
     // If a record exists in the database with the same email address, update the record
 });
 
+
+
 // Endpoint to receive verification code from user
-app.post('/verify-code', (req, res) => {
+app.post('/user/verify-code', (req, res) => {
     const code = req.body.code;
     const email = req.body.email;
 
@@ -98,7 +103,9 @@ app.post('/verify-code', (req, res) => {
 
 });
 
-app.post('/login', (req, res) => {
+
+
+app.post('/user/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     console.log("email:",email,"password:",password);
@@ -125,6 +132,70 @@ app.post('/login', (req, res) => {
     });
 }
 );
+
+//Endpoint to start login from brands.
+app.post('/brand/login', async (req, res) => {
+    const email = req.body.email;
+
+    checkBrandInDB(email).then(async (result) => {
+        console.log("result:",result);
+        if (result){
+            try {
+                const verificationCode = generateVerificationCode();
+        
+                await sendVerificationEmail(email, verificationCode);
+                
+                addVerifyCodeToRDS(email,verificationCode," ");
+        
+                // Return success message
+                return res.status(200).json({ message: 'Verification email sent' });
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
+            }
+        }else{
+            return res.status(400).json({ error: 'Brand does not exist' });
+        }
+    }
+    ).catch((error) => {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error while checking brand' });
+    }
+    );  
+});
+
+//Endpoint to verify otp from brands.
+app.post('/brand/verify-code', (req, res) => {
+    const code = req.body.code;
+    const email = req.body.email;
+    getCodeFromRDS(email).then((result) => {
+        if (code !== result) {
+                return res.status(400).json({ error: 'Invalid verification code' });
+            }
+            else{
+                deleteRowsFromRDSTemp(email)
+                .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
+                .catch((error) => console.error(error));
+                return res.status(200).json({ message: 'Verification code is correct, Brand Logged In' });
+                }
+            }
+        )
+    .catch((error) => {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error while fetching verification code' });
+        }
+    )
+});
+
+
+
+
+
+
+
+
+
+
 
 // Helper function to validate email format
 function isValidEmail(email) {

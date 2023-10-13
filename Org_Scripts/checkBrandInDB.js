@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-function addUserToRDS(email,username, password) {
+function checkBrandInDB(email) {
   const connection = mysql.createConnection({
     host: 'project-astra-rds.c5y9t5m5qhwe.ap-south-1.rds.amazonaws.com',
     user: 'admin',
@@ -8,20 +8,23 @@ function addUserToRDS(email,username, password) {
     database: 'astraDB',
   });
 
-  const query = `INSERT INTO organisations (email,name, password) VALUES ('${email}','${username}', '${password}')`;
+  const query = `SELECT email FROM organisations WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     connection.query(query, (error, results, fields) => {
       if (error) {
         reject(error);
+      } else if (results.length === 0) {
+        resolve(false);
       } else {
-        resolve(results);
+        resolve(true);
       }
       connection.end();
     });
   });
 }
 
-module.exports = addUserToRDS;
+module.exports = checkBrandInDB;
 
-// addUserToRDS('hello@gmail.com','hello','hello1234');
+// getCodeFromRDS('hello@gmail.com')
+//   .then((code) => console.log(code))
