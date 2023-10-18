@@ -17,6 +17,7 @@ const cors = require('cors');
 // Load environment variables from .env file
 dotenv.config();
 
+app.use(cors({origin: '*'}));
 // Use body-parser middleware to parse request body
 app.use(bodyParser.json());
 
@@ -259,4 +260,3 @@ app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
 
-app.use(cors({origin: '*'}));
