@@ -11,6 +11,7 @@ const checkUserInDB = require('./Scripts/checkUserPresent.js');
 const getPasswordFromRDS = require('./Scripts/getPasswordFromTemp.js');
 const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
 const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
+const cors = require('cors');
 
 
 // Load environment variables from .env file
@@ -257,3 +258,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
+
+app.use(cors({origin: '*'}));
