@@ -3,14 +3,9 @@ const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const app = express();
-const addVerifyCodeToRDS = require('./Scripts/addTemp.js');
-const getCodeFromRDS = require('./Scripts/getCode.js');
-const deleteRowsFromRDSTemp = require('./Scripts/removeTemp.js');
-const addUserToRDS = require('./Scripts/add_client.js');
-const checkUserInDB = require('./Scripts/checkUserPresent.js');
-const getPasswordFromRDS = require('./Scripts/getPasswordFromTemp.js');
-const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
-const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
+const CreateToken = require('./Brand/createDiscount');
+const fetchAllDiscounts = require('./Brand/displayAll');
+const edit = require('./Brand/editDiscount');
 const cors = require('cors');
 
 
@@ -29,53 +24,41 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.json('my api running');});
 
+// Endpoint to create a Discount by a Brand
+app.post('/brand/create', async (req, res) => {
+    try {
+        await CreateToken();
+        res.send('Token created successfully');
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Error creating token');
+      }
+});
 
-app.post('/client/display_all', (req, res) => { ')
+// Endpoint to fetch all the discounts
+app.post('/brand/display-all', async (req, res) => {
+    try {
+        // should return a json of the metadata of all the discounts
+        const results = await fetchAllDiscounts();
+        res.send(results);
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching discounts');
+      }
+});
 
-// // Endpoint to receive email address from user
-// app.post('/user/register', async (req, res) => {
-//     const email = req.body.email;
-//     const password = req.body.password;
-
-    
-//     if (!isValidEmail(email)) {
-//         return res.status(400).json({ error: 'Invalid email format' });
-//     }
-//     if (!isValidPassword(password)) {
-//         return res.status(400).json({ error: 'Invalid password format' });
-//     }
-
-//     // await checkUserInDB(email).then((result) => {
-//     //     if (result) {
-//     //         return res.status(400).json({ error: 'User already exists' });
-//     //     }});
-
-
-//     const result=await checkUserInDB(email);
-//     if (result) {
-//         return res.status(400).json({ error: 'User already exists' });
-//     }
-
-//     // Send verification email
-//     try {
-//         const verificationCode = generateVerificationCode();
-
-//         await sendVerificationEmail(email, verificationCode);
-        
-//         addVerifyCodeToRDS(email,verificationCode,password);
-
-//         // Return success message
-//         return res.status(200).json({ message: 'Verification email sent' });
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
-//     }
-
-//     // TODO: Save email, password, verification code, and timestamp to temporary database
-//     // If a record exists in the database with the same email address, update the record
-// });
-
-
+// Endpoint to edit the metadata of a discount with a given id
+app.post('/brand/edit-discount', async (req, res) => {
+    const id = req.body.id;
+    try {
+        // should return a json of the metadata of all the discounts
+        const results = await fetchAllDiscounts();
+        res.send(results);
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching discounts');
+      }
+});
 
 // // Endpoint to receive verification code from user
 // app.post('/user/verify-code', (req, res) => {
