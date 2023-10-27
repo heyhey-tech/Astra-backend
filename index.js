@@ -7,6 +7,7 @@ const CreateToken = require('./Brand/createDiscount');
 const fetchAllDiscounts = require('./Brand/displayAll');
 const edit = require('./Brand/editDiscount');
 const cors = require('cors');
+const airdrop = require('./Brand/airDrop');
 
 
 const RPC_ENDPOINT= "http://43.205.140.72"
@@ -66,6 +67,21 @@ app.post('/brand/edit-discount', async (req, res) => {
         console.error(err);
         res.status(500).send('Error fetching discounts');
       }
+});
+
+// Endpoint to airdrop given tokenIDs to given users
+app.post('/brand/airdrop', async (req, res) => {
+  const users = req.body.users;
+  const tokenIDs = req.body.tokenIDs;
+  const amounts = req.body.amounts;
+  console.log(users);
+  try {
+      const results = await airdrop(users,tokenIDs,amounts);
+      res.send(results);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error while airdroping discounts');
+    }
 });
 
 // Start server

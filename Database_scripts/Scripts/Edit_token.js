@@ -47,7 +47,7 @@ async function editS3Token(bucketName,Organisation_Name,fileName, data) {
 
 
   const s3 = new AWS.S3({
-    accessKeyId: 'AKIA6IXAVOTVXDX6OQ66',
+    accessKeyId: 'Access_Key',
     secretAccessKey: 'Secret_Key',
   });
   console.log(Organisation_Name);
