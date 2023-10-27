@@ -48,7 +48,7 @@ async function createS3Token(bucketName,Organisation_Name, data) {
   console.log(accessKeyId);
   console.log(secretAccessKey);
   const s3 = new AWS.S3({
-    accessKeyId: 'Access_Key',
+    accessKeyId: 'AKIA6IXAVOTVXDX6OQ66',
     secretAccessKey: 'Secret_Key',
   });
   // const Organisation_Name = data.org_name;
@@ -68,7 +68,7 @@ async function createS3Token(bucketName,Organisation_Name, data) {
         
         const fileParams = {
             Bucket: bucketName,
-            Key: `${Organisation_Name}${fileName}.json`,
+            Key: `${Organisation_Name}/${fileName}.json`,
             Body: '{}',
         };
         const new_data = {[fileName]: data};
@@ -76,12 +76,7 @@ async function createS3Token(bucketName,Organisation_Name, data) {
         await addDataToS3Organisation(bucketName, Organisation_Name, new_data,s3,fileParams);
         const result= await readS3Data(bucketName, fileName, Organisation_Name, s3);
         console.log('this is the Data stored in the file:',result);
-        // console.log('updatin file with new data');
-        // const new_data = { name: 'wtf RANA', price: 0.99 };
-        // await Updates3NFT(bucketName, Organisation_Name,fileName, new_data,s3);
-        // const result2= await readS3Data(bucketName, fileName, Organisation_Name, s3);
-        // console.log('this is the NEW Data stored in the file:',result2);
-
+     
         return `Folder ${Organisation_Name} already exists. New JSON file added to the folder.`;
         
     } else {

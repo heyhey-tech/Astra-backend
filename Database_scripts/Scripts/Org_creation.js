@@ -35,12 +35,12 @@ function createS3Organisation(bucketName, Organisation_Name) {
     });
   }
   
-  const bucketName = 'project-astra-bucket1';
-  const folderName = 'toysrus-nfts/';
-  createS3Organisation(bucketName, folderName)
-    .then((message) => {
-      console.log(message);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  // const bucketName = 'project-astra-bucket1';
+  // const folderName = 'toysrus-nfts/';
+  // createS3Organisation(bucketName, folderName)
+  //   .then((message) => {
+  //     console.log(message);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //   });
