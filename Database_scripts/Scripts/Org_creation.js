@@ -3,8 +3,8 @@ const AWS = require('aws-sdk');
 
 function createS3Organisation(bucketName, Organisation_Name) {
     const s3 = new AWS.S3({
-        accessKeyId:'AKIA6IXAVOTV7A76FFP3',
-        secretAccessKey:'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',
+        accessKeyId:'Access_Key',
+        secretAccessKey:'Secret_Key',
       });
     const folderParams = {
       Bucket: bucketName,
@@ -36,7 +36,7 @@ function createS3Organisation(bucketName, Organisation_Name) {
   }
   
   const bucketName = 'project-astra-bucket1';
-  const folderName = 'wrangler-nfts/';
+  const folderName = 'toysrus-nfts/';
   createS3Organisation(bucketName, folderName)
     .then((message) => {
       console.log(message);

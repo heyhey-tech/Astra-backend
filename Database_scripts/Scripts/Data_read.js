@@ -3,8 +3,8 @@ const AWS = require('aws-sdk');
 
 function readS3Data(bucketName,nft_name, Organisation_Name, s3) {
     // const s3 = new AWS.S3({
-    //   accessKeyId:'AKIA6IXAVOTV7A76FFP3',
-    //   secretAccessKey:'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',
+    //   accessKeyId:'Access_Key',
+    //   secretAccessKey:'Secret_Key',
     // });
   
     const fileParams = {

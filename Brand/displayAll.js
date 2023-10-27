@@ -1,4 +1,26 @@
-function fetchAllDiscounts(){
-    // get the metaData of all the discounts
+const path = require("path");
+const fs = require("fs-extra");
+const createS3Token = require("../Database_scripts/Scripts/NFT_new_creation");
+const readAllS3Files = require("../Database_scripts/Scripts/Real_all_files");
+var ethers = require("ethers");
+
+
+
+
+async function fetchAllDiscounts(Organisation_Name) {
+
+    const content =  await readAllS3Files(Organisation_Name);
+
+    // console.log(content);
+    return content;
+
+
 }
+
+// async function main() {
+//     const org_name = "toysrus-nfts/";
+//     const content = await fetchAllDiscounts(org_name);
+//     console.log(content);
+//   }
+// main();
 module.exports = fetchAllDiscounts;

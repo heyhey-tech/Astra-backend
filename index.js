@@ -25,9 +25,12 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {res.json('my api running');});
 
 // Endpoint to create a Discount by a Brand
-app.post('/brand/create', async (req, res) => {
+app.post('/brand/createToken', async (req, res) => {
+    const data=req.body.data;
+    const org_name=req.body.org_name;
+    console.log(org_name);
     try {
-        await CreateToken();
+        await CreateToken(org_name,data);
         res.send('Token created successfully');
       } catch (err) {
         console.error(err);
@@ -36,10 +39,13 @@ app.post('/brand/create', async (req, res) => {
 });
 
 // Endpoint to fetch all the discounts
-app.post('/brand/display-all', async (req, res) => {
+app.get('/brand/display-all', async (req, res) => {
+    const org_name=req.body.org_name;
+    // console.log(org_name);
     try {
         // should return a json of the metadata of all the discounts
-        const results = await fetchAllDiscounts();
+        const results = await fetchAllDiscounts(org_name);
+        // console.log(results);
         res.send(results);
       } catch (err) {
         console.error(err);

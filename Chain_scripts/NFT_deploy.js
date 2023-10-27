@@ -3,16 +3,16 @@ const fs = require("fs");
 var ethers = require("ethers");
 
 // rpcnode details
-const { tessera, quorum } = require("./keys_copy.js");
+const { tessera, quorum } = require("../Contract/keys_copy.js");
 const host = quorum.rpcnode.url;
-const accountAddress = quorum.rpcnode.accountAddress;
 
 // abi and bytecode generated from simplestorage.sol:
 const contractAbi = JSON.parse(
-    fs.readFileSync('../output/DiscountToken.abi')
+    fs.readFileSync('../Contract/DiscountToken.abi')
     );
+
   const contractBytecode = fs
-    .readFileSync('../output/DiscountToken.bin').toString();
+    .readFileSync('../Contract/DiscountToken.bin').toString();
 //   const contractAddress='0xcc4747b4ae57d9a0eb7a2fe0ad7fb8d9e98db51a';
 
 
@@ -43,9 +43,11 @@ async function main() {
   const wallet = new ethers.Wallet(Pkey, provider);
   console.log("Deployer Address:", wallet.address);
   console.log("Deploying the contract...")
-  const orgAddress = quorum.member3.accountAddress;
 
-  const contract = await createContract(provider, wallet, contractAbi, contractBytecode, "baseURI", orgAddress);
+  const orgAddress = quorum.member1.accountAddress;
+
+
+  const contract = await createContract(provider, wallet, contractAbi, contractBytecode, "baseURI", "Toysrus");
   console.log("Contract deployed at address: " + contract.address);
 }
 

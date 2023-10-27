@@ -4,8 +4,8 @@ const AWS = require('aws-sdk');
 
 function Updates3NFT(bucketName, Organisation_Name,NFT_name, data,s3) {
     // const s3 = new AWS.S3({
-    //   accessKeyId:'AKIA6IXAVOTV7A76FFP3',
-    //   secretAccessKey:'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',
+    //   accessKeyId:'Access_Key',
+    //   secretAccessKey:'Secret_Key',
     // });
   
     const fileParams = {
