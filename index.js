@@ -8,7 +8,8 @@ const fetchAllDiscounts = require('./Brand/displayAll');
 const edit = require('./Brand/editDiscount');
 const cors = require('cors');
 const airdrop = require('./Brand/airDrop');
-
+const getBalance = require('./User/displayBalance');
+const redeem = require('./User/redeem');
 
 const RPC_ENDPOINT= "http://43.205.140.72"
 const Validator_1_ENDPOINT="http://3.110.181.88"
@@ -83,6 +84,30 @@ app.post('/brand/airdrop', async (req, res) => {
       res.status(500).send('Error while airdroping discounts');
     }
 });
+// Endpoint to fetch balance of a user
+app.get('/user/balance', async (req, res) => {
+  const user = req.body.user;
+  try {
+      const results = await getBalance(user);
+      res.send(results);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error while fetching balance');
+    }
+});
+
+app.post('/user/redeem', async (req, res) => {
+  const userPK = req.body.userPK;
+  const tokenId = req.body.tokenId;
+  try {
+      const result = await redeem(userPK,tokenId);
+      res.send(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error while getting coupon code');
+    }
+});
+
 
 // Start server
 const PORT = process.env.PORT || 3000;
