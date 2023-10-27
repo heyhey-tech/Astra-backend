@@ -11,6 +11,7 @@ const checkUserInDB = require('./Scripts/checkUserPresent.js');
 const getPasswordFromRDS = require('./Scripts/getPasswordFromTemp.js');
 const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
 const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
+const registerAccount = require('./Chain_Scripts/register.js');
 const cors = require('cors');
 
 
@@ -72,18 +73,18 @@ app.post('/user/register', async (req, res) => {
 app.post('/user/verify-code', (req, res) => {
     const code = req.body.code;
     const email = req.body.email;
-
-    // const password = req.body.password;
-
+    const uname = req.body.username;
 
     getCodeFromRDS(email)
-    .then((result) => {
+    .then(async (result) => {
         if (code !== result) {
                 return res.status(400).json({ error: 'Invalid verification code' });
             }else{
                 console.log("code is same as result");
-                getPasswordFromRDS(email).then((password) => {
-                    addUserToRDS(email,email,password);
+                getPasswordFromRDS(email).then(async (password) => {
+
+                    addUserToRDS(email,uname,password);
+                    await registerAccount(email,password);
                 }).catch((error) => {
                     console.error(error);
                     return res.status(500).json({ error: 'Internal server error while fetching password' });
@@ -93,6 +94,8 @@ app.post('/user/verify-code', (req, res) => {
                 deleteRowsFromRDSTemp(email)
                 .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
                 .catch((error) => console.error(error));
+                
+
                 return res.status(200).json({ message: 'Verification code is correct, New User Registered' });
                 }
             }

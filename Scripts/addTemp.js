@@ -5,7 +5,7 @@ function addVerifyCodeToRDS(email, code,_password) {
   const connection = mysql.createConnection({
     host: 'project-astra-rds.c5y9t5m5qhwe.ap-south-1.rds.amazonaws.com',
     user: 'admin',
-    password: 'heyhey1234',
+    password: 'pw',
     database: 'astraDB',
   });
 

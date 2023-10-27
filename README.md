@@ -70,7 +70,6 @@ This endpoint receives a verification code in the request body and compares it w
   "code": "123456"
 }
 ```
-{"address":"0x2C6BC7B9A9Fc8cd66aaF5EEBD4fcFbAaA97daE68","privateKey":"0xc98e1537bae5347dc8bd5194a814e783b6bfbb710a926eeb8b190fad4fcf2513"}
 
 **Response**
 - 200 OK if the verification code is correct.
