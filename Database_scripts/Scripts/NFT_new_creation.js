@@ -41,34 +41,39 @@ async function checkFolderExists(bucketName, folderName,s3) {
   }
 
 
-async function createS3Token(bucketName,Organisation_Name, data) {
-  const accessKeyId= process.env.ACCESS_KEY;
-  const secretAccessKey= process.env.SECRET;
+async function createS3Token(bucketName,Organisation_name, data) {
+  // const accessKeyId= process.env.ACCESS_KEY;
+  // const secretAccessKey= process.env.SECRET;
 
-  console.log(accessKeyId);
-  console.log(secretAccessKey);
+  // console.log(accessKeyId);
+  // console.log(secretAccessKey);
+
+  const Organisation_Name = `${Organisation_name}/`
   const s3 = new AWS.S3({
-    accessKeyId: 'Access_Key',
-    secretAccessKey: 'Secret_Key',
+    accessKeyId: 'secret',
+    secretAccessKey: 'secret',
   });
   // const Organisation_Name = data.org_name;
   console.log(Organisation_Name);
 
 
     const folder_exits = await checkFolderExists(bucketName, Organisation_Name,s3);
-    console.log(folder_exits);
+    // console.log(folder_exits);
 
     // var totalFiles = await getTotalFilesInFolder(bucketName, Organisation_Name,s3);
     // console.log(totalFiles);
     if (folder_exits) {
 
-        const totalFiles = await getTotalFilesInFolder(bucketName, Organisation_Name,s3);
-        console.log(totalFiles);
-        const fileName=totalFiles;;
+      const files = await s3.listObjectsV2({ Bucket: bucketName, Prefix: Organisation_Name }).promise();
+      const fileNames = files.Contents.map((file) => file.Key.split('/').pop().split('.')[0]);
+      const numericalFileNames = fileNames.filter((fileName) => /^\d+$/.test(fileName));
+      const largestNumber = numericalFileNames.reduce((acc, cur) => Math.max(acc, cur), 0);
+      const fileName = `${Number(largestNumber) + 1}`;
+      console.log(fileName);
         
         const fileParams = {
             Bucket: bucketName,
-            Key: `${Organisation_Name}/${fileName}.json`,
+            Key: `${Organisation_Name}${fileName}.json`,
             Body: '{}',
         };
         const new_data = {[fileName]: data};
@@ -102,13 +107,7 @@ async function createS3Token(bucketName,Organisation_Name, data) {
 const bucketName = 'project-astra-bucket1';
 // const Org_name = 'lee-nfts/';
 // const data = { org_name: 'Toysrus',name: 'Teddy Bear', price: 19.99 };
-// createS3Token(bucketName, data)
-//   .then((message) => {
-//     console.log(message);
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
+
 // const data={ org_name: 'toysrus-nfts/', 
 //     data: { 
 //         token_name: 'Toysrus',
@@ -126,7 +125,7 @@ const bucketName = 'project-astra-bucket1';
 //         ] 
 //     } 
 // };
-// createS3Token(bucketName, data)
+// createS3Token(bucketName,'toysrus-nfts2', data)
 //   .then((message) => {
 //     console.log(message);
 //   })
