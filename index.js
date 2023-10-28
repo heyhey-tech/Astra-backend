@@ -12,6 +12,7 @@ const getPasswordFromRDS = require('./Scripts/getPasswordFromTemp.js');
 const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
 const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
 const registerAccount = require('./Chain_Scripts/register.js');
+const getAddressFromRDS = require('./Scripts/read_User_Address.js');
 const cors = require('cors');
 
 
@@ -128,6 +129,21 @@ app.post('/user/login', (req, res) => {
                 console.error(error);
                 return res.status(500).json({ error: 'Internal server error while fetching password' });
             });
+        }else{
+            return res.status(400).json({ error: 'User does not exist' });
+        }
+    }).catch((error) => {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error while checking user' });
+    });
+}
+);
+
+app.get('/user/get-address', (req, res) => {
+    const email = req.body.email;
+    getAddressFromRDS(email).then((result) => {
+        if (result) {
+            return res.status(200).json({ address: result });
         }else{
             return res.status(400).json({ error: 'User does not exist' });
         }
