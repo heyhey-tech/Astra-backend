@@ -28,19 +28,26 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.json('my api running');});
 
-// Endpoint to create a Discount by a Brand
 app.post('/brand/createToken', async (req, res) => {
-    const data=req.body.data;
-    const org_name=req.body.org_name;
-    console.log(org_name);
+    const token = req.headers.authorization.split(' ')[1];
     try {
-        await CreateToken(org_name,data);
-        res.send('Token created successfully');
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Error creating token');
-      }
-});
+      jwt.verify(token, secretKey);
+      const data=req.body.data;
+      const org_name=req.body.org_name;
+      console.log(org_name);
+      try {
+          await CreateToken(org_name,data);
+          res.send('Token created successfully');
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('Error creating token');
+        }
+    } catch (err) {
+      console.error(err);
+      res.status(401).send('Invalid token');
+    }
+  });
+
 
 // Endpoint to fetch all the discounts
 app.get('/brand/display-all', async (req, res) => {
