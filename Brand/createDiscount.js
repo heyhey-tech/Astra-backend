@@ -9,7 +9,7 @@ const { tessera, quorum } = require("./keys_copy.js");
 // for now, since we have just one org, we will hardcode these params
 // later, we will fetch them from the DB
 // const host = "http://43.205.140.72";
-const host = quorum.rpcnode.url;
+const host = "http://43.205.140.72";
 
 const abi = JSON.parse(
     fs.readFileSync('./Contract/DiscountToken.abi')

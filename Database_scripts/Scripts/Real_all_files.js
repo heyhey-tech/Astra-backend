@@ -2,8 +2,8 @@ const AWS = require('aws-sdk');
 
 async function readAllS3Files(folderName) {
   const s3 = new AWS.S3({
-    accessKeyId: 'Access_Key',
-    secretAccessKey: 'Secret_Key',
+  accessKeyId: 'access_key',
+      secretAccessKey: 'secret_key',
   });
   const bucketName = 'project-astra-bucket1';
   const params = {

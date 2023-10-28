@@ -11,6 +11,7 @@ const airdrop = require('./Brand/airDrop');
 const getBalance = require('./User/displayBalance');
 const redeem = require('./User/redeem');
 const jwt = require('jsonwebtoken');
+const { errorMonitor } = require('nodemailer/lib/xoauth2');
 const secretKey = 'secret-key';
 
 const RPC_ENDPOINT= "http://43.205.140.72"
@@ -29,6 +30,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {res.json('my api running');});
 
 app.post('/brand/createToken', async (req, res) => {
+    // console.log(req);
     const token = req.headers.authorization.split(' ')[1];
     try {
       jwt.verify(token, secretKey);
@@ -81,6 +83,7 @@ app.post('/brand/edit-discount', async (req, res) => {
     try {
         // should return a json of the metadata of all the discounts
         const results = await edit(file_name,org_name,data);
+        // console.log("index:",results)
         res.send(results);
       } catch (err) {
         console.error(err);
@@ -116,9 +119,11 @@ app.post('/brand/airdrop', async (req, res) => {
 // Endpoint to fetch balance of a user
 app.get('/user/balance', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
+//   console.log(token);
   try {
     const decoded = jwt.verify(token, secretKey);
     const user = decoded.email;
+    // console.log(user);
     try {
       const results = await getBalance(user);
       res.send(results);
@@ -133,23 +138,24 @@ app.get('/user/balance', async (req, res) => {
 });
 
 app.post('/user/redeem', async (req, res) => {
-  const token = req.headers.authorization.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    const user = decoded.email;
-    const tokenId = req.body.tokenId;
+    const token = req.headers.authorization.split(' ')[1];
     try {
-      const result = await redeem(user, tokenId);
-      res.send(result);
+      const decoded = jwt.verify(token, secretKey);
+      const user = decoded.email;
+      const tokenId = req.body.tokenId;
+        
+        const result = await redeem(user, tokenId);
+        if(result instanceof Error){
+            res.status(401).send('Error while redeeming');
+        }else{
+            res.send(result);
+        }
+
     } catch (err) {
       console.error(err);
-      res.status(500).send('Error while redeeming token');
+      res.status(401).send('Invalid token');
     }
-  } catch (err) {
-    console.error(err);
-    res.status(401).send('Invalid token');
-  }
-});
+  });
 
 
 // Start server

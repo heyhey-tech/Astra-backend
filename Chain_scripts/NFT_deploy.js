@@ -4,7 +4,7 @@ var ethers = require("ethers");
 
 // rpcnode details
 const { tessera, quorum } = require("../Contract/keys_copy.js");
-const host = quorum.rpcnode.url;
+const host = "http://43.205.140.72";
 
 // abi and bytecode generated from simplestorage.sol:
 const contractAbi = JSON.parse(

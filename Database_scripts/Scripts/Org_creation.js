@@ -3,8 +3,8 @@ const AWS = require('aws-sdk');
 
 function createS3Organisation(bucketName, Organisation_Name) {
     const s3 = new AWS.S3({
-        accessKeyId:'Access_Key',
-        secretAccessKey:'Secret_Key',
+      accessKeyId: 'access_key',
+      secretAccessKey: 'secret_key',
       });
     const folderParams = {
       Bucket: bucketName,

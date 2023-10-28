@@ -21,7 +21,7 @@ function appendToS3Organisation(bucketName, Organisation_Name, data,s3,fileParam
             if (err) {
               reject(err);
             } else {
-              resolve(`Data appended to ${Organisation_Name}/NFTsMetadata.json successfully.`);
+              resolve(`Data appended to ${Organisation_Name}successfully.`);
             }
           });
         }

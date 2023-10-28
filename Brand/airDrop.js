@@ -13,7 +13,7 @@ const { tessera, quorum } = require("./keys_copy.js");
 // for now, since we have just one org, we will hardcode these params
 // later, we will fetch them from the DB
 // const host = "http://43.205.140.72";
-const host = quorum.rpcnode.url;
+const host = "http://43.205.140.72";
 
 const abi = JSON.parse(
     fs.readFileSync('./Contract/DiscountToken.abi')
@@ -50,9 +50,6 @@ async function generateAccount(seed) {
 async function airdrop(emails,tokenIDs,amounts) {
 
 
-
-
-
     const users=[];
 
     for (let i=0;i<emails.length;i++){
@@ -67,7 +64,7 @@ async function airdrop(emails,tokenIDs,amounts) {
         users.push(account.address);
     }
 
-
+// This is the organisation private key, SInce there is only one demo org, we are hardcoding it
     const Pkey = quorum.member1.accountPrivateKey;
 
 
@@ -79,6 +76,7 @@ async function airdrop(emails,tokenIDs,amounts) {
 
         const res= await contractWithSigner.airdropBatch(users, tokenIDs, amounts,{gasLimit: 1000000});
         console.log("Transaction hash:", res.hash);
+        return res.hash;
     } catch (err) {
         console.log(err);
         return; 

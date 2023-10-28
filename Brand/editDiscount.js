@@ -8,12 +8,13 @@ const editS3Token = require("../Database_scripts/Scripts/Edit_token");
 
 async function edit(file_name,org_name,data){
     try{
-        await editS3Token('project-astra-bucket1',org_name,file_name, data); 
-
+        const res=await editS3Token('project-astra-bucket1',org_name,file_name, data); 
+        // console.log(res);
+        return res;
 
     }catch(err){
         console.log(err);
-        return;
+        return err;
     }
     // edit the metadata of the given tokenID
 }

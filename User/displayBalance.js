@@ -86,8 +86,8 @@ async function getBalance(email) {
 
 
 // async function main(){
-//     const user = quorum.member3.accountAddress;
-// const tokenIDs = [3,5,99];
+//     const user = "hello@gmail.com";
+// const tokenIDs = [1,2];
 //  const res= await getBalance(user);
 
 //  console.log(res);

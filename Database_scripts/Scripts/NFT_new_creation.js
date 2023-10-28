@@ -50,8 +50,8 @@ async function createS3Token(bucketName,Organisation_name, data) {
 
   const Organisation_Name = `${Organisation_name}/`
   const s3 = new AWS.S3({
-    accessKeyId: 'secret',
-    secretAccessKey: 'secret',
+      accessKeyId: 'access_key',
+      secretAccessKey: 'secret_key',
   });
   // const Organisation_Name = data.org_name;
   console.log(Organisation_Name);

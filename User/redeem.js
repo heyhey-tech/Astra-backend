@@ -13,7 +13,7 @@ const { error } = require("console");
 // for now, since we have just one org, we will hardcode these params
 // later, we will fetch them from the DB
 // const host = "http://43.205.140.72";
-const host = quorum.rpcnode.url;
+const host = "http://43.205.140.72";
 
 const abi = JSON.parse(
     fs.readFileSync('./Contract/DiscountToken.abi')
@@ -40,7 +40,7 @@ async function generateAccount(seed) {
     const account = await web3.eth.accounts.privateKeyToAccount('0x' + sha256Hash);
     // const account = await web3.eth.accounts.create();
 
-    console.log(account);
+    // console.log(account);
 
     return account;
 }
@@ -53,7 +53,7 @@ async function redeem(email, tokenID) {
          const res= await checkUserInDB(email);
          if(res===false){
                 console.log(email," not present in DB");
-                throw new Error(email+" not present in DB");
+                return new Error(email+" not present in DB");
          }
          password= await getPasswordFromDB(email);
     }catch(err){
@@ -63,36 +63,34 @@ async function redeem(email, tokenID) {
     const seed = email.concat(password);
     const account = await generateAccount(seed);
     const Pkey = account.privateKey;
-    // console.log(Pkey);
 
-    readS3Data('project-astra-bucket1', tokenID, 'toysrus-nfts')
-        .then((fileContent) => {
-        // console.log(fileContent);
-        if (fileContent[tokenID].isValid === 'false') {
-            // console.log('Token Not Valid');
-            throw new Error('Token Not Valid');
-        }
-        })
-        .catch((err) => {
-            // console.error(err);
-            return err;
-        });
-    const wallet = new ethers.Wallet(Pkey, provider);
-    const contractWithSigner = contract.connect(wallet);
-
-    const senderAddress = account.address;    
-    console.log(senderAddress);
-    const hash = ethers.utils.solidityKeccak256(['uint256', 'address'], [tokenID, senderAddress]);
-  
     try {
-        const res = await contractWithSigner.redeemDiscount(tokenID, hash, { gasLimit: 1000000 });
-        // console.log("Transaction hash:", res);
-
-        return hash;
+        const fileContent = await readS3Data('project-astra-bucket1', tokenID, 'toysrus-nfts');
+        if (fileContent[tokenID].isValid === 'false') {
+            console.log("token not valid");
+            return new Error('Token Not Valid');
+        }else{
+            const wallet = new ethers.Wallet(Pkey, provider);
+            const contractWithSigner = contract.connect(wallet);
+        
+            const senderAddress = account.address;    
+            const hash = ethers.utils.solidityKeccak256(['uint256', 'address'], [tokenID, senderAddress]);
+            
+            try {
+                const res = await contractWithSigner.redeemDiscount(tokenID, hash, { gasLimit: 1000000 });
+                // console.log("Transaction hash:", res);
+        
+                return hash;
+            } catch (err) {
+                console.log(err);
+                return err;
+            }
+        }
     } catch (err) {
-        // console.log(err);
+        console.log("returning error:",err);
         return err;
     }
+
 }
 // redeem('hello@gmail.com', 1);
 
