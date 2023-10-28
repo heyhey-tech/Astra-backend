@@ -141,6 +141,8 @@ app.post('/user/login', (req, res) => {
   });
 });
 
+
+//this is not used in the app
 app.get('/user/get-address', (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   try {
@@ -176,11 +178,8 @@ app.post('/brand/login', async (req, res) => {
 
         addVerifyCodeToRDS(email,verificationCode," ");
 
-        // Generate JWT token
-        const token = jwt.sign({ email }, secretKey);
-
         // Return success message with token
-        return res.status(200).json({ message: 'Verification email sent', token });
+        return res.status(200).json({ message: 'Verification email sent' });
       } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
@@ -206,7 +205,11 @@ app.post('/brand/verify-code', (req, res) => {
                 deleteRowsFromRDSTemp(email)
                 .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
                 .catch((error) => console.error(error));
-                return res.status(200).json({ message: 'Verification code is correct, Brand Logged In' });
+                  // Generate JWT token
+                const token = jwt.sign({ email }, secretKey);
+
+                // Return success message with token
+                return res.status(200).json({ message: ' verification code correct', token });
                 }
             }
         )
