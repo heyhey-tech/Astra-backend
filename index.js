@@ -14,6 +14,8 @@ const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
 const registerAccount = require('./Chain_Scripts/register.js');
 const getAddressFromRDS = require('./Scripts/read_User_Address.js');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const secretKey = 'secret-key';
 
 
 // Load environment variables from .env file
@@ -112,77 +114,84 @@ app.post('/user/verify-code', (req, res) => {
 
 
 app.post('/user/login', (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    console.log("email:",email,"password:",password);
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log("email:",email,"password:",password);
 
-    checkUserInDB(email).then((result) => {
-        console.log("result:",result);
-        if (result) {
-            getPasswordFromDB(email).then((result) => {
-                if (result === password) {
-                    return res.status(200).json({ message: 'User Logged In' });
-                }else{
-                    return res.status(400).json({ error: 'Invalid Password' });
-                }
-            }).catch((error) => {
-                console.error(error);
-                return res.status(500).json({ error: 'Internal server error while fetching password' });
-            });
-        }else{
-            return res.status(400).json({ error: 'User does not exist' });
+  checkUserInDB(email).then((result) => {
+    console.log("result:",result);
+    if (result) {
+      getPasswordFromDB(email).then((result) => {
+        if (result === password) {
+          const token = jwt.sign({ email }, secretKey);
+          return res.status(200).json({ message: 'User Logged In', token });
+        } else {
+          return res.status(400).json({ error: 'Invalid Password' });
         }
-    }).catch((error) => {
+      }).catch((error) => {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error while checking user' });
-    });
-}
-);
+        return res.status(500).json({ error: 'Internal server error while fetching password' });
+      });
+    } else {
+      return res.status(400).json({ error: 'User does not exist' });
+    }
+  }).catch((error) => {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error while checking user' });
+  });
+});
 
 app.get('/user/get-address', (req, res) => {
-    const email = req.body.email;
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const email = decoded.email;
     getAddressFromRDS(email).then((result) => {
-        if (result) {
-            return res.status(200).json({ address: result });
-        }else{
-            return res.status(400).json({ error: 'User does not exist' });
-        }
+      if (result) {
+        return res.status(200).json({ address: result });
+      } else {
+        return res.status(400).json({ error: 'User does not exist' });
+      }
     }).catch((error) => {
-        console.error(error);
-        return res.status(500).json({ error: 'Internal server error while checking user' });
+      console.error(error);
+      return res.status(500).json({ error: 'Internal server error while fetching address' });
     });
-}
-);
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+});
 
 //Endpoint to start login from brands.
 app.post('/brand/login', async (req, res) => {
-    const email = req.body.email;
+  const email = req.body.email;
 
-    checkBrandInDB(email).then(async (result) => {
-        console.log("result:",result);
-        if (result){
-            try {
-                const verificationCode = generateVerificationCode();
-        
-                await sendVerificationEmail(email, verificationCode);
-                
-                addVerifyCodeToRDS(email,verificationCode," ");
-        
-                // Return success message
-                return res.status(200).json({ message: 'Verification email sent' });
-            } catch (error) {
-                console.error(error);
-                return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
-            }
-        }else{
-            return res.status(400).json({ error: 'Brand does not exist' });
-        }
-    }
-    ).catch((error) => {
+  checkBrandInDB(email).then(async (result) => {
+    console.log("result:",result);
+    if (result){
+      try {
+        const verificationCode = generateVerificationCode();
+
+        await sendVerificationEmail(email, verificationCode);
+
+        addVerifyCodeToRDS(email,verificationCode," ");
+
+        // Generate JWT token
+        const token = jwt.sign({ email }, secretKey);
+
+        // Return success message with token
+        return res.status(200).json({ message: 'Verification email sent', token });
+      } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error while checking brand' });
+        return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
+      }
+    }else{
+      return res.status(400).json({ error: 'Brand does not exist' });
     }
-    );  
+  }).catch((error) => {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error while checking brand' });
+  });
 });
 
 //Endpoint to verify otp from brands.
