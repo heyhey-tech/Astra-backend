@@ -53,24 +53,6 @@ async function CreateToken(org_name,data) {
     }
 
 }
-// const pass_data={ org_name: 'toysrus-nfts/', 
-//     data: { 
-//         token_name: 'Toysrus',
-//         token_symbol: 'TRU',
-//         token_description: 'Toysrus',
-//         token_image: 'https://www.toysrus.com/graphics/tru_prod_images/Disney-Pixar-Toy-Story-4-Bo-Peep-Action-Staff--pTRU1-32590364dt.jpg',
-//         token_external_url: 'https://www.toysrus.com/graphics/tru_prod_images/Disney-Pixar-Toy-Story-4-Bo-Peep-Action-Staff--pTRU1-32590364dt.jpg',
-//         token_animation_url: 'https://www.toysrus.com/graphics/tru_prod_images/Disney-Pixar-Toy-Story-4-Bo-Peep-Action-Staff--pTRU1-32590364dt.jpg',
-//         token_background_color: '#FFFFFF',
-//         token_attributes: [ 
-//             { trait_type: 'Brand', value: 'Toysrus' },
-//             { trait_type: 'Discount', value: '10%' },
-//             { trait_type: 'Category', value: 'Toys' },
-//             { trait_type: 'Expiry', value: '10/10/2021' } 
-//         ] 
-//     } 
-// };
 
-// CreateToken(pass_data);
 
 module.exports=CreateToken;

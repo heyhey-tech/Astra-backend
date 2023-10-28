@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-require('dotenv').config({ path: '../../.env'});
+require('dotenv').config({ path: '.env'});
 
 // const myVariable = process.env.RPC_ENDPOINT;
 const access_key = process.env.ACCESS_KEY;

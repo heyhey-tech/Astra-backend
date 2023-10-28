@@ -57,15 +57,16 @@ app.get('/brand/display-all', async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const org_name=req.body.org_name;
-    try {
+    
       // should return a json of the metadata of all the discounts
       const results = await fetchAllDiscounts(org_name);
-      // console.log(results);
-      res.send(results);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Error fetching discounts');
-    }
+      if(results instanceof Error){
+        res.status(401).send('Error fetching discounts');
+      }else{
+        res.send(results);
+
+      }
+   
   } catch (err) {
     console.error(err);
     res.status(401).send('Invalid token');
@@ -143,8 +144,9 @@ app.post('/user/redeem', async (req, res) => {
       const decoded = jwt.verify(token, secretKey);
       const user = decoded.email;
       const tokenId = req.body.tokenId;
+      const org_name = req.body.org_name;
         
-        const result = await redeem(user, tokenId);
+        const result = await redeem(user, tokenId,org_name);
         if(result instanceof Error){
             res.status(401).send('Error while redeeming');
         }else{

@@ -46,7 +46,7 @@ async function generateAccount(seed) {
 }
 
 //Data contains Organisation name and meta data for the token 
-async function redeem(email, tokenID) {
+async function redeem(email, tokenID, org_name) {
 
     let password;
     try{
@@ -63,9 +63,10 @@ async function redeem(email, tokenID) {
     const seed = email.concat(password);
     const account = await generateAccount(seed);
     const Pkey = account.privateKey;
+    const Folder_name=org_name.concat('/');
 
     try {
-        const fileContent = await readS3Data('project-astra-bucket1', tokenID, 'toysrus-nfts');
+        const fileContent = await readS3Data('project-astra-bucket1', tokenID, Folder_name);
         if (fileContent[tokenID].isValid === 'false') {
             console.log("token not valid");
             return new Error('Token Not Valid');

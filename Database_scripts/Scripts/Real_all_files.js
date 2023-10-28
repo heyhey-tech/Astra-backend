@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-require('dotenv').config({ path: '../../.env'});
+require('dotenv').config({ path: '.env'});
 
 const access_key = process.env.ACCESS_KEY;
 const secret_key = process.env.SECRET;
@@ -41,6 +41,10 @@ async function readAllS3Files(folderName) {
     }
 
     // Send the compiled metadata as a JSON response
+    if(Object.keys(metadata).length === 0 && metadata.constructor === Object){
+      console.log("No data found");
+      return new Error(`${folderName} does not exist.`);
+    }
     return metadata;
   } catch (err) {
     console.error('Error:', err);

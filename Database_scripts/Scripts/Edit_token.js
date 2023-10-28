@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const addDataToS3Organisation = require('./Data_addtion');
 const readS3Data=require('./Data_read');
-require('dotenv').config({ path: '../../.env'});
+require('dotenv').config({ path: '.env'});
 
 const access_key = process.env.ACCESS_KEY;
 const secret_key = process.env.SECRET;
