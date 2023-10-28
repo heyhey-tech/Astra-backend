@@ -37,9 +37,7 @@ async function airdrop(users,tokenIDs,amounts) {
 
     console.log("Initiating airdrop...");
     try {
-        // const users=[quorum.member3.accountAddress,quorum.member2.accountAddress];
-        // const tokenIDs=[1,2];
-        // const amounts=[1,1];
+
         const res= await contractWithSigner.airdropBatch(users, tokenIDs, amounts,{gasLimit: 1000000});
         console.log("Transaction hash:", res.hash);
     } catch (err) {
