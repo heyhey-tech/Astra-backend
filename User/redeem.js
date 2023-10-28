@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs-extra");
 var ethers = require("ethers");
 const readS3Data = require("../Database_scripts/Scripts/Data_read");
+const getPasswordFromDB = require("../Database_scripts/Scripts/RDS/getPasswordFromDB");
 
 
 // rpcnode details
@@ -29,8 +30,33 @@ const contract = new ethers.Contract(
     provider
 );
 
+async function generateAccount(seed) {
+    // Generate a 256-bit hash from the string
+    const sha256Hash = crypto.createHash('sha256').update(seed).digest('hex');
+
+    // Create an Ethereum account from the private key
+    const account = await web3.eth.accounts.privateKeyToAccount('0x' + sha256Hash);
+    // const account = await web3.eth.accounts.create();
+
+    console.log(account);
+
+    return account;
+}
+
 //Data contains Organisation name and meta data for the token 
-async function redeem(Pkey, tokenID) {
+async function redeem(email, tokenID) {
+
+    let password;
+    try{
+         password= await getPasswordFromDB(email);
+    }catch(err){
+        console.log(err);
+        return err;
+    }
+    const seed = email.concat(password);
+    const account = await generateAccount(seed);
+    const Pkey = account.privateKey;
+    // console.log(Pkey);
 
     readS3Data('project-astra-bucket1', tokenID, 'toysrus-nfts')
         .then((fileContent) => {
@@ -47,11 +73,10 @@ async function redeem(Pkey, tokenID) {
     const wallet = new ethers.Wallet(Pkey, provider);
     const contractWithSigner = contract.connect(wallet);
 
-    const senderAddress = quorum.member3.accountAddress;    
-    // console.log(senderAddress);
+    const senderAddress = account.address;    
+    console.log(senderAddress);
     const hash = ethers.utils.solidityKeccak256(['uint256', 'address'], [tokenID, senderAddress]);
-    // console.log("hash:",hash);
-    // console.log("Authenticating Coupon...");
+  
     try {
         const res = await contractWithSigner.redeemDiscount(tokenID, hash, { gasLimit: 1000000 });
         // console.log("Transaction hash:", res);
@@ -62,6 +87,6 @@ async function redeem(Pkey, tokenID) {
         return err;
     }
 }
-// redeem(quorum.member3.accountPrivateKey, 5);
+// redeem(, 5);
 
 module.exports = redeem;
