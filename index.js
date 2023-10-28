@@ -10,6 +10,8 @@ const cors = require('cors');
 const airdrop = require('./Brand/airDrop');
 const getBalance = require('./User/displayBalance');
 const redeem = require('./User/redeem');
+const jwt = require('jsonwebtoken');
+const secretKey = 'secret-key';
 
 const RPC_ENDPOINT= "http://43.205.140.72"
 const Validator_1_ENDPOINT="http://3.110.181.88"
@@ -42,21 +44,30 @@ app.post('/brand/createToken', async (req, res) => {
 
 // Endpoint to fetch all the discounts
 app.get('/brand/display-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
     const org_name=req.body.org_name;
-    // console.log(org_name);
     try {
-        // should return a json of the metadata of all the discounts
-        const results = await fetchAllDiscounts(org_name);
-        // console.log(results);
-        res.send(results);
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Error fetching discounts');
-      }
+      // should return a json of the metadata of all the discounts
+      const results = await fetchAllDiscounts(org_name);
+      // console.log(results);
+      res.send(results);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error fetching discounts');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(401).send('Invalid token');
+  }
 });
 
 // Endpoint to edit the metadata of a discount with a given id
 app.post('/brand/edit-discount', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
     const file_name = req.body.token_id;
     const org_name = req.body.org_name;
     const data= req.body.data;
@@ -68,44 +79,69 @@ app.post('/brand/edit-discount', async (req, res) => {
         console.error(err);
         res.status(500).send('Error fetching discounts');
       }
+    } catch (err) {
+      console.error(err);
+      res.status(401).send('Invalid token');
+    }
 });
 
 // Endpoint to airdrop given tokenIDs to given users
 app.post('/brand/airdrop', async (req, res) => {
-  const users = req.body.users;
-  const tokenIDs = req.body.tokenIDs;
-  const amounts = req.body.amounts;
-  console.log(users);
+  const token = req.headers.authorization.split(' ')[1];
   try {
-      const results = await airdrop(users,tokenIDs,amounts);
+    jwt.verify(token, secretKey);
+    const users = req.body.users;
+    const tokenIDs = req.body.tokenIDs;
+    const amounts = req.body.amounts;
+    console.log(users);
+    try {
+      const results = await airdrop(users, tokenIDs, amounts);
       res.send(results);
     } catch (err) {
       console.error(err);
-      res.status(500).send('Error while airdroping discounts');
+      res.status(500).send('Error while airdropping discounts');
     }
+  } catch (err) {
+    console.error(err);
+    res.status(401).send('Invalid token');
+  }
 });
 // Endpoint to fetch balance of a user
 app.get('/user/balance', async (req, res) => {
-  const user = req.body.user;
+  const token = req.headers.authorization.split(' ')[1];
   try {
+    const decoded = jwt.verify(token, secretKey);
+    const user = decoded.email;
+    try {
       const results = await getBalance(user);
       res.send(results);
     } catch (err) {
       console.error(err);
       res.status(500).send('Error while fetching balance');
     }
+  } catch (err) {
+    console.error(err);
+    res.status(401).send('Invalid token');
+  }
 });
 
 app.post('/user/redeem', async (req, res) => {
-  const userPK = req.body.userPK;
-  const tokenId = req.body.tokenId;
+  const token = req.headers.authorization.split(' ')[1];
   try {
-      const result = await redeem(userPK,tokenId);
+    const decoded = jwt.verify(token, secretKey);
+    const user = decoded.email;
+    const tokenId = req.body.tokenId;
+    try {
+      const result = await redeem(user, tokenId);
       res.send(result);
     } catch (err) {
       console.error(err);
-      res.status(500).send('Error while getting coupon code');
+      res.status(500).send('Error while redeeming token');
     }
+  } catch (err) {
+    console.error(err);
+    res.status(401).send('Invalid token');
+  }
 });
 
 
