@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-function getPasswordFromDB(email) {
+function checkUserInDB(email) {
   const connection = mysql.createConnection({
     host: 'project-astra-rds.c5y9t5m5qhwe.ap-south-1.rds.amazonaws.com',
     user: 'admin',
@@ -8,7 +8,7 @@ function getPasswordFromDB(email) {
     database: 'astraDB',
   });
 
-  const query = `SELECT password FROM users WHERE email='${email}'`;
+  const query = `SELECT email FROM users WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     connection.query(query, (error, results, fields) => {
@@ -17,14 +17,14 @@ function getPasswordFromDB(email) {
       } else if (results.length === 0) {
         resolve(false);
       } else {
-        resolve(results[0].password);
+        resolve(true);
       }
       connection.end();
     });
   });
 }
 
-module.exports = getPasswordFromDB;
+module.exports = checkUserInDB;
 
 // getCodeFromRDS('hello@gmail.com')
 //   .then((code) => console.log(code))

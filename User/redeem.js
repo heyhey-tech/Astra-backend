@@ -3,7 +3,9 @@ const fs = require("fs-extra");
 var ethers = require("ethers");
 const readS3Data = require("../Database_scripts/Scripts/Data_read");
 const getPasswordFromDB = require("../Database_scripts/Scripts/RDS/getPasswordFromDB");
-
+const crypto = require('crypto');
+const web3 = require('web3');
+const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
 
 // rpcnode details
 const { tessera, quorum } = require("./keys_copy.js");
@@ -14,7 +16,7 @@ const { error } = require("console");
 const host = quorum.rpcnode.url;
 
 const abi = JSON.parse(
-    fs.readFileSync('./Contract/DiscountToken.abi')
+    fs.readFileSync('../Contract/DiscountToken.abi')
 );
 // const bytecode = fs
 //     .readFileSync('../Chain_scripts/output/DiscountToken.bin').toString();
@@ -48,6 +50,11 @@ async function redeem(email, tokenID) {
 
     let password;
     try{
+         const res= await checkUserInDB(email);
+         if(res===false){
+                console.log(email," not present in DB");
+                throw new Error(email+" not present in DB");
+         }
          password= await getPasswordFromDB(email);
     }catch(err){
         console.log(err);
@@ -87,6 +94,6 @@ async function redeem(email, tokenID) {
         return err;
     }
 }
-// redeem(, 5);
+redeem('hello@gmail.com', 1);
 
 module.exports = redeem;

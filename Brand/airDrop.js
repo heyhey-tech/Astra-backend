@@ -2,6 +2,10 @@ const path = require("path");
 const fs = require("fs-extra");
 const createS3Token = require("../Database_scripts/Scripts/NFT_new_creation");
 var ethers = require("ethers");
+const getPasswordFromDB= require("../Database_scripts/Scripts/RDS/getPasswordFromDB");
+const crypto = require('crypto');
+const web3 = require('web3');
+const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");
 
 
 // rpcnode details
@@ -28,9 +32,44 @@ const contract = new ethers.Contract(
     provider
 );
 
+
+async function generateAccount(seed) {
+    // Generate a 256-bit hash from the string
+    const sha256Hash = crypto.createHash('sha256').update(seed).digest('hex');
+
+    // Create an Ethereum account from the private key
+    const account = await web3.eth.accounts.privateKeyToAccount('0x' + sha256Hash);
+    // const account = await web3.eth.accounts.create();
+
+    console.log(account);
+
+    return account;
+}
+
 //Data contains Organisation name and meta data for the token 
-async function airdrop(users,tokenIDs,amounts) {
+async function airdrop(emails,tokenIDs,amounts) {
+
+
+
+
+
+    const users=[];
+
+    for (let i=0;i<emails.length;i++){
+        const res= await checkUserInDB(emails[i]);
+        if(res===false){
+            console.log(emails[i]," not present in DB");
+            continue;
+        }
+        const password= await getPasswordFromDB(emails[i]);
+        const seed = emails[i].concat(password);
+        const account = await generateAccount(seed);
+        users.push(account.address);
+    }
+
+
     const Pkey = quorum.member1.accountPrivateKey;
+
 
     const wallet = new ethers.Wallet(Pkey, provider);
     const contractWithSigner = contract.connect(wallet);
@@ -49,8 +88,9 @@ async function airdrop(users,tokenIDs,amounts) {
 // const users=[quorum.member3.accountAddress,quorum.member2.accountAddress];
 // const tokenIDs=[3,5];
 // const amounts=[1,1];
+// const emails=["hello@gmail.com"]
 
-// airdrop(users,tokenIDs,amounts);
+// airdrop(emails,[1,2],[1,2]);
 
 
 module.exports=airdrop;
