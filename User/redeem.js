@@ -16,7 +16,7 @@ const { error } = require("console");
 const host = quorum.rpcnode.url;
 
 const abi = JSON.parse(
-    fs.readFileSync('../Contract/DiscountToken.abi')
+    fs.readFileSync('./Contract/DiscountToken.abi')
 );
 // const bytecode = fs
 //     .readFileSync('../Chain_scripts/output/DiscountToken.bin').toString();
@@ -94,6 +94,6 @@ async function redeem(email, tokenID) {
         return err;
     }
 }
-redeem('hello@gmail.com', 1);
+// redeem('hello@gmail.com', 1);
 
 module.exports = redeem;
