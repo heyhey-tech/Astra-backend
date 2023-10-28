@@ -1,9 +1,15 @@
 const AWS = require('aws-sdk');
 
+require('dotenv').config({ path: '../../.env'});
+
+const access_key = process.env.ACCESS_KEY;
+const secret_key = process.env.SECRET;
+
+
 async function readAllS3Files(folderName) {
   const s3 = new AWS.S3({
-  accessKeyId: 'access_key',
-      secretAccessKey: 'secret_key',
+  accessKeyId: access_key,
+      secretAccessKey: secret_key,
   });
   const bucketName = 'project-astra-bucket1';
   const params = {

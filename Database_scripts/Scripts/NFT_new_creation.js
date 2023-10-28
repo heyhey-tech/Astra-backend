@@ -1,11 +1,11 @@
 const AWS = require('aws-sdk');
-const dotenv = require('dotenv');
-
 const addDataToS3Organisation = require('./Data_addtion');
 const readS3Data=require('./Data_read');
-const Updates3NFT=require('./Update_data');
+require('dotenv').config({ path: '../../.env'});
 
-dotenv.config();
+const access_key = process.env.ACCESS_KEY;
+const secret_key = process.env.SECRET;
+
 
 async function checkFolderExists(bucketName, folderName,s3) {
 
@@ -50,8 +50,8 @@ async function createS3Token(bucketName,Organisation_name, data) {
 
   const Organisation_Name = `${Organisation_name}/`
   const s3 = new AWS.S3({
-      accessKeyId: 'access_key',
-      secretAccessKey: 'secret_key',
+      accessKeyId: access_key,
+      secretAccessKey: secret_key,
   });
   // const Organisation_Name = data.org_name;
   console.log(Organisation_Name);
