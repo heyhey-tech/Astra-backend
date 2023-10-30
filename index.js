@@ -13,21 +13,71 @@ const redeem = require('./User/redeem');
 const jwt = require('jsonwebtoken');
 const { errorMonitor } = require('nodemailer/lib/xoauth2');
 const secretKey = 'secret-key';
+const multer = require('multer');
+const AWS = require('aws-sdk');
+const uuidv4 = require('uuid').v4;
+const path = require('path');
+const fs = require('fs-extra');
 
 const RPC_ENDPOINT= "http://43.205.140.72"
 const Validator_1_ENDPOINT="http://3.110.181.88"
 const Member_1_ENDPOINT="http://3.110.223.171"
 
-
-
-// Load environment variables from .env file
 dotenv.config();
 
 app.use(cors({origin: '*'}));
-// Use body-parser middleware to parse request body
 app.use(bodyParser.json());
 
+const upload = multer({
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/') || file.mimetype === 'image/gif') {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'));
+    }
+  }
+});
+
+
 app.get('/', (req, res) => {res.json('my api running');});
+
+
+app.post('/brand/upload', upload.single('image'), (req, res) => {
+  const file = req.file;
+  const token = req.headers.authorization.split(' ')[1];
+  try{
+    jwt.verify(token, secretKey);
+
+    if (!file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.ACCESS_KEY,
+      secretAccessKey: process.env.SECRET
+    });
+  
+    console.log(file);
+    const fileName = `${uuidv4()}-${file.originalname}`;
+    const params = {
+      Bucket: 'project-astra-bucket1',
+      Key: 'images/' + fileName,
+      Body: file.buffer
+    };
+  
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error('Error uploading file: ', err);
+        return res.status(500).send('Error uploading file.');
+      }
+  
+      console.log('File uploaded successfully: ', data.Location);
+      return res.status(200).send(data.Location);
+    });
+  }catch(err){
+    console.error(err);
+    res.status(401).send('Invalid token');
+  }
+});
 
 app.post('/brand/createToken', async (req, res) => {
     // console.log(req);
