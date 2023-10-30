@@ -56,12 +56,12 @@ app.get('/brand/display-all', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   try {
     jwt.verify(token, secretKey);
-    const org_name=req.body.org_name;
+    const org_name=req.params.org_name;
     
       // should return a json of the metadata of all the discounts
       const results = await fetchAllDiscounts(org_name);
       if(results instanceof Error){
-        res.status(401).send('Error fetching discounts');
+        res.status(400).send('Error fetching discounts');
       }else{
         res.send(results);
 
@@ -69,7 +69,7 @@ app.get('/brand/display-all', async (req, res) => {
    
   } catch (err) {
     console.error(err);
-    res.status(401).send('Invalid token');
+    res.status(400).send('Invalid token');
   }
 });
 
