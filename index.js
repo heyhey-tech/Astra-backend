@@ -76,7 +76,6 @@ app.post('/user/register', async (req, res) => {
 app.post('/user/verify-code', (req, res) => {
     const code = req.body.code;
     const email = req.body.email;
-    const uname = req.body.username;
 
     getCodeFromRDS(email)
     .then(async (result) => {
@@ -86,7 +85,7 @@ app.post('/user/verify-code', (req, res) => {
                 console.log("code is same as result");
                 getPasswordFromRDS(email).then(async (password) => {
 
-                    addUserToRDS(email,uname,password);
+                    addUserToRDS(email,email,password);
                     await registerAccount(email,password);
                 }).catch((error) => {
                     console.error(error);
