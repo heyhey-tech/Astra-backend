@@ -1,4 +1,7 @@
 const mysql = require('mysql');
+require('dotenv').config({ path: '.env'});
+
+const rdspw = process.env.RDS;
 
 function checkBrandInDB(email) {
   const connection = mysql.createConnection({
