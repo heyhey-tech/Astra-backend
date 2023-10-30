@@ -55,9 +55,12 @@ app.post('/brand/createToken', async (req, res) => {
 app.get('/brand/display-all', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   try {
+    // console.log("here::")
     jwt.verify(token, secretKey);
-    const org_name=req.params.org_name;
+    // console.log("query:",req?.query);
+    const org_name=req.query.org_name;
     
+      console.log("name:",org_name);
       // should return a json of the metadata of all the discounts
       const results = await fetchAllDiscounts(org_name);
       if(results instanceof Error){
