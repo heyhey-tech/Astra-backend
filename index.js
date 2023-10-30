@@ -121,7 +121,7 @@ app.post('/brand/airdrop', async (req, res) => {
   }
 });
 // Endpoint to fetch balance of a user
-app.get('/user/balance', async (req, res) => {
+app.post('/user/balance', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
 //   console.log(token);
   try {
