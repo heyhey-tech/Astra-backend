@@ -102,9 +102,9 @@ app.post('/brand/createToken', async (req, res) => {
   });
 
 app.get('/brand/getUsers', async (req, res) => {
-  // const token = req.headers.authorization.split(' ')[1];
+  const token = req.headers.authorization.split(' ')[1];
   try {
-    // jwt.verify(token, secretKey);
+    jwt.verify(token, secretKey);
     try {
         const results = await getUsers();
         console.log("RESULT:",results);
