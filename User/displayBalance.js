@@ -83,7 +83,7 @@ async function getBalance(email) {
     const balances = [];
     const data=[];
   
-    for (let j = 0; j < 15; j++) {
+    for (let j = 10; j < 25; j++) {
       try {
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
         // console.log(balance.toString());
