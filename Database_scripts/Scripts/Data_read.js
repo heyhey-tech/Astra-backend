@@ -6,6 +6,7 @@ const access_key = process.env.ACCESS_KEY;
 const secret_key = process.env.SECRET;
 
 function readS3Data(bucketName,nft_name, Organisation_Name) {
+    // const bucketName = 'project-astra-bucket1';
     const s3 = new AWS.S3({
         accessKeyId: access_key,
       secretAccessKey: secret_key,

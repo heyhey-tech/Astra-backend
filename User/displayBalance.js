@@ -5,9 +5,11 @@ const getPasswordFromDB = require("../Database_scripts/Scripts/RDS/getPasswordFr
 const crypto = require('crypto');
 const web3 = require('web3');
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
+const readS3Data = require("../Database_scripts/Scripts/Data_read");
 
 // rpcnode details
 const { tessera, quorum } = require("./keys_copy.js");
+const { read } = require("fs");
 const host = quorum.validator1.url;
 const accountAddress = quorum.rpcnode.accountAddress;
 
@@ -41,6 +43,21 @@ async function generateAccount(seed) {
   return account;
 }
 
+
+function getTokenData(data, tokenId) {
+  // Find the object with the matching tokenId
+  const tokenObject = data.find(item => item.tokenId === tokenId);
+
+  // If no matching object is found, return null
+  if (!tokenObject) {
+    return null;
+  }
+
+  // Return the Token_data for the matching tokenId
+  return tokenObject.Token_data[tokenId.toString()];
+}
+// const tokenData = getTokenData(data, tokenId);
+
 async function getBalance(email) {
     let password;
     try{
@@ -63,23 +80,30 @@ async function getBalance(email) {
   
     const tokenIds = [];
     const balances = [];
+    const data=[];
   
     for (let j = 0; j < 100; j++) {
       try {
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
+        // console.log(balance.toString());
         if (balance.toString() !== '0') {
           tokenIds.push(j);
           balances.push(balance.toString());
+          const res_data= await readS3Data('project-astra-bucket1', j, 'toysrus-nfts/');
+          data.push(res_data);
         }
       } catch (err) {
         console.log(err);
         return [];
       }
     }
-  
+    
+    // const Token_name = results[0].Token_data[results[0].tokenId].name;
+
     const result = tokenIds.map((tokenId, index) => ({
       tokenId,
       balance: balances[index],
+      Token_data: data[index],
     }));
     return result;
   }

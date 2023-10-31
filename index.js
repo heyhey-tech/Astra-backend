@@ -177,10 +177,20 @@ app.post('/user/balance', async (req, res) => {
   try {
     const decoded = jwt.verify(token, secretKey);
     const user = decoded.email;
+    // 
     // console.log(user);
     try {
       const results = await getBalance(user);
-      res.send(results);
+      const final_res=[];
+      for (let i = 0; i < results.length; i++) {
+        const Token = results[i].Token_data[results[i].tokenId];
+        final_res.push({
+          tokenId: results[i].tokenId,
+          balance: results[i].balance,
+          Token_data: Token,
+        });
+      }
+      res.send(final_res); 
     } catch (err) {
       console.error(err);
       res.status(500).send('Error while fetching balance');
