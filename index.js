@@ -75,7 +75,7 @@ app.post('/brand/upload', upload.single('image'), (req, res) => {
     });
   }catch(err){
     console.error(err);
-    res.status(401).send('Invalid token');
+    res.status(400).send('Invalid token');
   }
 });
 
@@ -96,7 +96,7 @@ app.post('/brand/createToken', async (req, res) => {
         }
     } catch (err) {
       console.error(err);
-      res.status(401).send('Invalid token');
+      res.status(400).send('Invalid token');
     }
   });
 
@@ -145,7 +145,7 @@ app.post('/brand/edit-discount', async (req, res) => {
       }
     } catch (err) {
       console.error(err);
-      res.status(401).send('Invalid token');
+      res.status(400).send('Invalid token');
     }
 });
 
@@ -167,7 +167,7 @@ app.post('/brand/airdrop', async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(401).send('Invalid token');
+    res.status(400).send('Invalid token');
   }
 });
 // Endpoint to fetch balance of a user
@@ -198,7 +198,7 @@ app.post('/user/balance', async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(401).send('Invalid token');
+    res.status(400).send('Invalid token');
   }
 });
 
@@ -219,7 +219,7 @@ app.post('/user/redeem', async (req, res) => {
 
     } catch (err) {
       console.error(err);
-      res.status(401).send('Invalid token');
+      res.status(400).send('Invalid token');
     }
   });
 
