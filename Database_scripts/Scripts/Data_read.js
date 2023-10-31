@@ -5,7 +5,34 @@ require('dotenv').config({ path: '.env'});
 const access_key = process.env.ACCESS_KEY;
 const secret_key = process.env.SECRET;
 
-function readS3Data(bucketName,nft_name, Organisation_Name) {
+
+// const AWS = require('aws-sdk');
+
+async function checkFileExists(params,s3) {
+  // const s3 = new AWS.S3({
+  //   accessKeyId: process.env.ACCESS_KEY,
+  //   secretAccessKey: process.env.SECRET
+  // });
+
+  // const params = {
+  //   Bucket: bucketName,
+  //   Key: key
+  // };
+
+  try {
+    await s3.headObject(params).promise();
+    return true;
+  } catch (err) {
+    if (err.code === 'NotFound') {
+      return false;
+    } else {
+      console.error(err);
+      throw err;
+    }
+  }
+}
+
+async function readS3Data(bucketName,nft_name, Organisation_Name) {
     // const bucketName = 'project-astra-bucket1';
     const s3 = new AWS.S3({
         accessKeyId: access_key,
@@ -16,7 +43,12 @@ function readS3Data(bucketName,nft_name, Organisation_Name) {
         Bucket: bucketName,
         Key: `${Organisation_Name}${nft_name}.json`,
       };
-    
+
+    const exists = await checkFileExists(fileParams,s3);
+    if (!exists) {
+        return new Error(`file does not exist.`);
+    }
+    console.log(fileParams.Key);
     return new Promise((resolve, reject) => {
         s3.getObject(fileParams, (err, result) => {
           if (err) {

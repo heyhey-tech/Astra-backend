@@ -59,6 +59,7 @@ function getTokenData(data, tokenId) {
 }
 // const tokenData = getTokenData(data, tokenId);
 
+
 async function getBalance(email) {
     let password;
     try{
@@ -85,17 +86,26 @@ async function getBalance(email) {
   
     for (let j = 10; j < 25; j++) {
       try {
+        console.log(j);
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
         // console.log(balance.toString());
         if (balance.toString() !== '0') {
+        
+
+          const res_data= await readS3Data('project-astra-bucket1', j, 'toysrus-nfts/');
           tokenIds.push(j);
           balances.push(balance.toString());
-          const res_data= await readS3Data('project-astra-bucket1', j, 'toysrus-nfts/');
+          console.log(res_data);
           data.push(res_data);
         }
       } catch (err) {
-        console.log(err);
-        return [];
+        if(err==="The specified key does not exist."){
+          continue;
+        }else{
+          console.log("ERR:",err);
+          return [];
+        }
+      
       }
     }
     
