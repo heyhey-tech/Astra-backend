@@ -181,6 +181,7 @@ app.post('/user/balance', async (req, res) => {
     // console.log(user);
     try {
       const results = await getBalance(user);
+      // console.log(results);
       const final_res=[];
       for (let i = 0; i < results.length; i++) {
         const Token = results[i].Token_data[results[i].tokenId];

@@ -10,7 +10,8 @@ const readS3Data = require("../Database_scripts/Scripts/Data_read");
 // rpcnode details
 const { tessera, quorum } = require("./keys_copy.js");
 const { read } = require("fs");
-const host = quorum.validator1.url;
+// const host = quorum.validator1.url;
+const host= "http://43.205.140.72";
 const accountAddress = quorum.rpcnode.accountAddress;
 
 
@@ -82,7 +83,7 @@ async function getBalance(email) {
     const balances = [];
     const data=[];
   
-    for (let j = 0; j < 100; j++) {
+    for (let j = 0; j < 15; j++) {
       try {
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
         // console.log(balance.toString());
