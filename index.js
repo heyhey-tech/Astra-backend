@@ -6,6 +6,7 @@ const app = express();
 const CreateToken = require('./Brand/createDiscount');
 const fetchAllDiscounts = require('./Brand/displayAll');
 const edit = require('./Brand/editDiscount');
+const getUsers = require('./Brand/getAllUsers');
 const cors = require('cors');
 const airdrop = require('./Brand/airDrop');
 const getBalance = require('./User/displayBalance');
@@ -99,6 +100,25 @@ app.post('/brand/createToken', async (req, res) => {
       res.status(400).send('Invalid token');
     }
   });
+
+app.get('/brand/getUsers', async (req, res) => {
+  // const token = req.headers.authorization.split(' ')[1];
+  try {
+    // jwt.verify(token, secretKey);
+    try {
+        const results = await getUsers();
+        console.log("RESULT:",results);
+        res.send(results);
+      } catch (err) {
+        console.error(err);
+        res.status(400).send('Error fetching users');
+      }
+  } catch (err) {
+    console.error(err);
+    res.status(400).send('Invalid token');
+  }
+});
+
 
 
 // Endpoint to fetch all the discounts
@@ -212,7 +232,7 @@ app.post('/user/redeem', async (req, res) => {
         
         const result = await redeem(user, tokenId,org_name);
         if(result instanceof Error){
-            res.status(401).send('Error while redeeming');
+            res.status(400).send('Error while redeeming');
         }else{
             res.send(result);
         }
