@@ -19,7 +19,7 @@ const abi = JSON.parse(
         fs.readFileSync('./Contract/DiscountToken.abi')
 );
 // add the deployed contract address here
-const contractAddress = '0x68249ac64729F5e29f296ac0a670BDf9F6E6BeF9';
+const contractAddress = '0x00fFD3548725459255f1e78A61A07f1539Db0271';
 
 
 const provider = new ethers.providers.JsonRpcProvider(host);

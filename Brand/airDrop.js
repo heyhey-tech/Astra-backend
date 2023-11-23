@@ -20,7 +20,7 @@ const abi = JSON.parse(
 );
 // const bytecode = fs
 //     .readFileSync('../Chain_scripts/output/DiscountToken.bin').toString();
-const contractAddress = '0x68249ac64729F5e29f296ac0a670BDf9F6E6BeF9';
+const contractAddress = '0x00fFD3548725459255f1e78A61A07f1539Db0271';
 
 
 const provider = new ethers.providers.JsonRpcProvider(host);
