@@ -44,6 +44,8 @@ async function airdrop(emails,tokenIDs,amounts) {
         const password= await getPasswordFromDB(emails[i]);
         const seed = emails[i].concat(password);
         const account = await generateAccount(seed);
+        console.log("to addr:",account.address);
+
         users.push(account.address);
     }
 

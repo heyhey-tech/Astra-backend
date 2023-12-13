@@ -20,9 +20,6 @@ const uuidv4 = require('uuid').v4;
 const path = require('path');
 const fs = require('fs-extra');
 
-const RPC_ENDPOINT= "http://43.205.140.72"
-const Validator_1_ENDPOINT="http://3.110.181.88"
-const Member_1_ENDPOINT="http://3.110.223.171"
 
 dotenv.config();
 
