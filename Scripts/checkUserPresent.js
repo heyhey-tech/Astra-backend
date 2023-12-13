@@ -1,33 +1,47 @@
 const mysql = require('mysql');
-require('dotenv').config({ path: '.env'});
+const pool = require('./db');
 
-const rdspw = process.env.RDS;
-
-function checkUserInDB(email) {
-  const connection = mysql.createConnection({
-    host: 'project-astra-rds.c5y9t5m5qhwe.ap-south-1.rds.amazonaws.com',
-    user: 'admin',
-    password: rdspw,
-    database: 'astraDB',
-  });
-
-  const query = `SELECT email FROM users WHERE email='${email}'`;
-
+// Wrap the query function in a promise
+function query(sql, values) {
   return new Promise((resolve, reject) => {
-    connection.query(query, (error, results, fields) => {
+    pool.getConnection((error, connection) => {
       if (error) {
         reject(error);
-      } else if (results.length === 0) {
-        resolve(false);
-      } else {
-        resolve(true);
+        return;
       }
-      connection.end();
+
+      connection.query(sql, values, (error, results, fields) => {
+        connection.release(); // Release the connection back to the pool
+        
+        if (error) {
+          reject(error);
+          return;
+        }else if (results.length === 0) {
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+      });
     });
   });
 }
 
-module.exports = checkUserInDB;
+      
 
-// getCodeFromRDS('hello@gmail.com')
-//   .then((code) => console.log(code))
+// Check if the user exists in the database
+async function checkUserInDB(email) {
+  const sql = `SELECT email FROM users WHERE email='${email}'`;
+
+  const values = [email];
+
+  try {
+    const results = await query(sql, values);
+    return results;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+module.exports = checkUserInDB;

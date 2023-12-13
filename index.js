@@ -40,10 +40,6 @@ app.post('/user/register', async (req, res) => {
         return res.status(400).json({ error: 'Invalid password format' });
     }
 
-    // await checkUserInDB(email).then((result) => {
-    //     if (result) {
-    //         return res.status(400).json({ error: 'User already exists' });
-    //     }});
 
 
     const result=await checkUserInDB(email);
@@ -66,8 +62,7 @@ app.post('/user/register', async (req, res) => {
         return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
     }
 
-    // TODO: Save email, password, verification code, and timestamp to temporary database
-    // If a record exists in the database with the same email address, update the record
+    
 });
 
 
@@ -115,7 +110,7 @@ app.post('/user/verify-code', (req, res) => {
 app.post('/user/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log("email:",email,"password:",password);
+  // console.log("email:",email,"password:",password);
 
   checkUserInDB(email).then((result) => {
     console.log("result:",result);
@@ -218,14 +213,6 @@ app.post('/brand/verify-code', (req, res) => {
         }
     )
 });
-
-
-
-
-
-
-
-
 
 
 
