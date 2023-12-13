@@ -16,6 +16,7 @@ async function CreateToken(org_name,data) {
     console.log("Creating token...");
     try {
         const res= await contractWithSigner.createToken({gasLimit: 1000000});
+        // const res= await contractWithSigner.tokenIDCounter(1);
         console.log("Transaction hash:", res.hash);
     } catch (err) {
         console.log(err);

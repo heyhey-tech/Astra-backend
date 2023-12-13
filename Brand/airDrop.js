@@ -59,12 +59,6 @@ async function airdrop(emails,tokenIDs,amounts) {
     }
 }
 
-// const users=[quorum.member3.accountAddress,quorum.member2.accountAddress];
-// const tokenIDs=[3,5];
-// const amounts=[1,1];
-// const emails=["hello@gmail.com"]
-
-// airdrop(emails,[1,2],[1,2]);
 
 
 module.exports=airdrop;

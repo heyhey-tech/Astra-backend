@@ -6,6 +6,7 @@ const getPasswordFromDB = require("../Database_scripts/Scripts/RDS/getPasswordFr
 const crypto = require('crypto');
 const web3 = require('web3');
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
+const readCoupon = require("../Database_scripts/Scripts/Fetch_Coupon_Code");
 
 const { error } = require("console");
 const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
@@ -57,14 +58,16 @@ async function redeem(email, tokenID, org_name) {
             const wallet = new ethers.Wallet(Pkey, provider);
             const contractWithSigner = contract.connect(wallet);
         
-            const senderAddress = account.address;    
-            const hash = ethers.utils.solidityKeccak256(['uint256', 'address'], [tokenID, senderAddress]);
+            // const senderAddress = account.address;    
+            // const hash = ethers.utils.solidityKeccak256(['uint256', 'address'], [tokenID, senderAddress]);
             
             try {
-                const res = await contractWithSigner.redeemDiscount(tokenID, hash, { gasLimit: 1000000 });
+                const coupon = await readCoupon('project-astra-bucket1');
+                const res = await contractWithSigner.redeem(tokenID, { gasLimit: 1000000 });
                 // console.log("Transaction hash:", res);
-        
-                return hash;
+                // console.log(res);
+                
+                return coupon;
             } catch (err) {
                 console.log(err);
                 return err;
