@@ -7,29 +7,15 @@ const web3 = require('web3');
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
 const readS3Data = require("../Database_scripts/Scripts/Data_read");
 
-// rpcnode details
-const { tessera, quorum } = require("./keys_copy.js");
-const { read } = require("fs");
-// const host = quorum.validator1.url;
-const host= "http://43.205.140.72";
-const accountAddress = quorum.rpcnode.accountAddress;
-
-
-const abi = JSON.parse(
-        fs.readFileSync('./Contract/DiscountToken.abi')
-);
-// add the deployed contract address here
-const contractAddress = '0x00fFD3548725459255f1e78A61A07f1539Db0271';
-
-
+const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
+const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
 const provider = new ethers.providers.JsonRpcProvider(host);
+const abi = require("../Contract/Heycoin.json").abi;
+const contract = new ethers.Contract(contractAddress, abi, provider);
+const Pkey = "0x" + process.env.MEMBER_PRIVATE_KEY;
+const wallet = new ethers.Wallet(Pkey, provider);
+const contractWithSigner = contract.connect(wallet);
 
-
-const contract = new ethers.Contract(
-        contractAddress,
-        abi,
-        provider
-);
 
 async function generateAccount(seed) {
   // Generate a 256-bit hash from the string
@@ -76,22 +62,16 @@ async function getBalance(email) {
     const seed = email.concat(password);
     const account = await generateAccount(seed);
     const user = account.address;
-    const userPK = quorum.member3.accountPrivateKey;
-    const wallet = new ethers.Wallet(userPK, provider);
-    const contractWithSigner = contract.connect(wallet);
-  
     const tokenIds = [];
     const balances = [];
     const data=[];
   
-    for (let j = 10; j < 25; j++) {
+    for (let j = 0; j < 10; j++) {
       try {
         console.log(j);
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
         // console.log(balance.toString());
         if (balance.toString() !== '0') {
-        
-
           const res_data= await readS3Data('project-astra-bucket1', j, 'toysrus-nfts/');
           tokenIds.push(j);
           balances.push(balance.toString());

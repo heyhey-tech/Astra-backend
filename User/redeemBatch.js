@@ -4,51 +4,60 @@ require("dotenv").config({ path: "../.env" });
 
 var queue = [];
 var lastProcessedTime = Date.now();
+const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
+const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
+const provider = new ethers.providers.JsonRpcProvider(host);
+const abi = require("../Contract/Heycoin.json").abi;
+const contract = new ethers.Contract(contractAddress, abi, provider);
+const Pkey = "0x" + process.env.MEMBER_PRIVATE_KEY;
+const wallet = new ethers.Wallet(Pkey, provider);
+const contractWithSigner = contract.connect(wallet);
 
 async function redeemBatch(users, tokenIDs) {
-    const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
-    const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
-    const provider = new ethers.providers.JsonRpcProvider(host);
-    const abi = require("../Contract/Heycoin.json").abi;
-    const contract = new ethers.Contract(contractAddress, abi, provider);
-    const Pkey = "0x" + process.env.MEMBER_PRIVATE_KEY;
-    const wallet = new ethers.Wallet(Pkey, provider);
-    const contractWithSigner = contract.connect(wallet);
     const res = await contractWithSigner.redeemBatch(users, tokenIDs);
     await res.wait();
     return res.hash;
 }
 
-function addToQueue(userAddress, tokenId) {
+async function addToQueue(userAddress, tokenId) {
+    // Check the balance of the token for the given user
+    let balance = await contractWithSigner.balanceOf(userAddress, tokenId);
+    if (balance === 0) {
+        console.error(`You have already redeemed your Heycoin.`);
+        return;
+    }
+
+    for (let i = 0; i < queue.length; i++) {
+        if (queue[i].userAddress === userAddress && queue[i].tokenId === tokenId) {
+            console.error(`Your Heycoin is being redeemed.`);
+            return;
+        }
+    }
+
     queue.push({ userAddress, tokenId });
 
     // Check if the queue size has reached 100
     if (queue.length >= 100) {
-        //[+][+] Before processing the queue, remove duplicate calls and remove calls for tokens that 
-        //[+][+] have already been redeemed/or have 0 balance and display error message for those calls
-        processQueue();
+        processQueue(queue);
+        queue = [];
     }
 }
 
 // Scheduled check every 5 seconds
 setInterval(() => {
     if (Date.now() - lastProcessedTime >= 5000) {
-        processQueue();
+        processQueue(queue);
+        queue = [];
     }
 }, 5000);
 
-async function processQueue() {
+async function processQueue(queue) {
     if (queue.length === 0) return;
-
-    // Creating a copy of the queue and clearing the original queue
-    const queueCopy = [...queue];
-    queue = [];
-
     lastProcessedTime = Date.now();
 
     // Split queue copy into users and tokenIDs
-    let users = queueCopy.map(item => item.userAddress);
-    let tokenIDs = queueCopy.map(item => item.tokenId);
+    let users = queue.map(item => item.userAddress);
+    let tokenIDs = queue.map(item => item.tokenId);
 
     try {
         const hash = await redeemBatch(users, tokenIDs);

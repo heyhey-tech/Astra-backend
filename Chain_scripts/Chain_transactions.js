@@ -4,14 +4,10 @@ const ethers = require("ethers");
 const crypto = require('crypto');
 const web3 = require('web3');
 
-// Read configuration and smart contract details
-const { quorum } = require("./keys_copy.js");
-const host = quorum.rpcnode.url;
-const abi = JSON.parse(fs.readFileSync('./Contract/DiscountToken.abi'));
-const contractAddress = '0x00fFD3548725459255f1e78A61A07f1539Db0271';
-
-// Connect to the Ethereum network
+const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
+const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
 const provider = new ethers.providers.JsonRpcProvider(host);
+const abi = require("../Contract/Heycoin.json").abi;
 const contract = new ethers.Contract(contractAddress, abi, provider);
 
 /**

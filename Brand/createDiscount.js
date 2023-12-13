@@ -1,40 +1,18 @@
-const path = require("path");
-const fs = require("fs-extra");
 const createS3Token = require("../Database_scripts/Scripts/NFT_new_creation");
 var ethers = require("ethers");
 
-
-// rpcnode details
-const { tessera, quorum } = require("./keys_copy.js");
-// for now, since we have just one org, we will hardcode these params
-// later, we will fetch them from the DB
-// const host = "http://43.205.140.72";
-const host = "http://43.205.140.72";
-
-const abi = JSON.parse(
-    fs.readFileSync('./Contract/DiscountToken.abi')
-);
-// const bytecode = fs
-//     .readFileSync('../Chain_scripts/output/DiscountToken.bin').toString();
-const contractAddress = '0x00fFD3548725459255f1e78A61A07f1539Db0271';
-
-
+const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
+const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
 const provider = new ethers.providers.JsonRpcProvider(host);
+const abi = require("../Contract/Heycoin.json").abi;
+const contract = new ethers.Contract(contractAddress, abi, provider);
+const Pkey = "0x" + process.env.MEMBER_PRIVATE_KEY;
+const wallet = new ethers.Wallet(Pkey, provider);
+const contractWithSigner = contract.connect(wallet);
 
-
-const contract = new ethers.Contract(
-    contractAddress,
-    abi,
-    provider
-);
 
 //Data contains Organisation name and meta data for the token 
 async function CreateToken(org_name,data) {
-    const Pkey = quorum.member1.accountPrivateKey;
-
-    const wallet = new ethers.Wallet(Pkey, provider);
-    const contractWithSigner = contract.connect(wallet);
-
     console.log("Creating token...");
     try {
         const res= await contractWithSigner.createToken({gasLimit: 1000000});
