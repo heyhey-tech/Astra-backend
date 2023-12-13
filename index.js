@@ -17,7 +17,9 @@ const airdrop = require('./Chain_Scripts/airdrop.js');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const secretKey = 'secret-key';
+const fs = require('fs');
 
+const file=fs.readFileSync('./31E1F8C7E5E02E8BE204AC0E1669E6D5.txt');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -27,6 +29,8 @@ app.use(cors({origin: '*'}));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.json('my api running');});
+
+app.get('/.well-known/pki-validation/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt', (req, res) => {res.send("/Users/peerfaheem/Documents/AJ/Astra-backend-1/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt");});
 
 // Endpoint to receive email address from user
 app.post('/user/register', async (req, res) => {
