@@ -13,6 +13,7 @@ const getPasswordFromDB = require('./Scripts/getPasswordFromDB.js');
 const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
 const registerAccount = require('./Chain_Scripts/register.js');
 const getAddressFromRDS = require('./Scripts/read_User_Address.js');
+const airdrop = require('./Chain_Scripts/airdrop.js');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const secretKey = 'secret-key';
@@ -51,7 +52,13 @@ app.post('/user/register', async (req, res) => {
     try {
         const verificationCode = generateVerificationCode();
 
-        await sendVerificationEmail(email, verificationCode);
+        sendVerificationEmail(email, verificationCode).then((result) => {
+          console.log("Verification email sent");
+        }
+        ).catch((error) => {
+          console.error(error);
+          return res.status(400).json({ error: 'Internal server error while sending Verification mail' });
+        });
         
         addVerifyCodeToRDS(email,verificationCode,password);
 
@@ -59,7 +66,7 @@ app.post('/user/register', async (req, res) => {
         return res.status(200).json({ message: 'Verification email sent' });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
+        return res.status(400).json({ error: 'Internal server error while sending Verification mail' });
     }
 
     
@@ -81,25 +88,32 @@ app.post('/user/verify-code', (req, res) => {
                 getPasswordFromRDS(email).then(async (password) => {
 
                     addUserToRDS(email,email,password);
-                    await registerAccount(email,password);
+                    // Call airdrop function without await and handle the promise
+                    airdrop([email], ["1"], [1],password).then(txHash => {
+                      // You can log the transaction hash or take any other action here
+                      console.log("Airdrop transaction hash:", txHash);
+                    }).catch(error => {
+                      // Log the error that occurred during the airdrop
+                      console.error("Error occurred during airdrop:", error);
+
                 }).catch((error) => {
                     console.error(error);
-                    return res.status(500).json({ error: 'Internal server error while fetching password' });
+                    return res.status(400).json({ error: 'Internal server error while fetching password' });
                 });
+              });
 
 
                 deleteRowsFromRDSTemp(email)
                 .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
                 .catch((error) => console.error(error));
                 
-
                 return res.status(200).json({ message: 'Verification code is correct, New User Registered' });
                 }
             }
         )
     .catch((error) => {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error while fetching verification code' });
+        return res.status(400).json({ error: 'Internal server error while fetching verification code' });
         }
     )
 
@@ -124,14 +138,14 @@ app.post('/user/login', (req, res) => {
         }
       }).catch((error) => {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error while fetching password' });
+        return res.status(400).json({ error: 'Internal server error while fetching password' });
       });
     } else {
       return res.status(400).json({ error: 'User does not exist' });
     }
   }).catch((error) => {
     console.error(error);
-    return res.status(500).json({ error: 'Internal server error while checking user' });
+    return res.status(400).json({ error: 'Internal server error while checking user' });
   });
 });
 
@@ -150,7 +164,7 @@ app.get('/user/get-address', (req, res) => {
       }
     }).catch((error) => {
       console.error(error);
-      return res.status(500).json({ error: 'Internal server error while fetching address' });
+      return res.status(400).json({ error: 'Internal server error while fetching address' });
     });
   } catch (err) {
     console.error(err);
@@ -168,7 +182,14 @@ app.post('/brand/login', async (req, res) => {
       try {
         const verificationCode = generateVerificationCode();
 
-        await sendVerificationEmail(email, verificationCode);
+        sendVerificationEmail(email, verificationCode).then((result) => {
+          console.log("Verification email sent");
+        }
+        ).catch((error) => {
+          console.error(error);
+          return res.status(400).json({ error: 'Internal server error while sending Verification mail' });
+        });
+
 
         addVerifyCodeToRDS(email,verificationCode," ");
 
@@ -176,14 +197,14 @@ app.post('/brand/login', async (req, res) => {
         return res.status(200).json({ message: 'Verification email sent' });
       } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error while sending Verification mail' });
+        return res.status(400).json({ error: 'Internal server error while sending Verification mail' });
       }
     }else{
       return res.status(400).json({ error: 'Brand does not exist' });
     }
   }).catch((error) => {
     console.error(error);
-    return res.status(500).json({ error: 'Internal server error while checking brand' });
+    return res.status(400).json({ error: 'Internal server error while checking brand' });
   });
 });
 
