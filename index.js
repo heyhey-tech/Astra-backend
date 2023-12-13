@@ -17,9 +17,16 @@ const airdrop = require('./Chain_Scripts/airdrop.js');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const secretKey = 'secret-key';
+const https=require('https');
 const fs = require('fs');
 
-const file=fs.readFileSync('./31E1F8C7E5E02E8BE204AC0E1669E6D5.txt');
+const key=fs.readFileSync('./private.key');
+const cert=fs.readFileSync('./certificate.crt');
+
+const cred={
+  key,
+  cert
+}
 
 // Load environment variables from .env file
 dotenv.config();
@@ -30,7 +37,7 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.json('my api running');});
 
-app.get('/.well-known/pki-validation/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt', (req, res) => {res.sendFile("/Users/peerfaheem/Documents/AJ/Astra-backend-1/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt");});
+// app.get('/.well-known/pki-validation/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt', (req, res) => {res.sendFile("/Users/peerfaheem/Documents/AJ/Astra-backend-1/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt");});
 
 // Endpoint to receive email address from user
 app.post('/user/register', async (req, res) => {
@@ -302,3 +309,5 @@ app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
 
+const httpsServer=https.createServer(cred,app);
+httpsServer.listen(8443)
