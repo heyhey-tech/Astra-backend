@@ -16,7 +16,10 @@ const Pkey = "0x" + process.env.MEMBER_PRIVATE_KEY;
 const wallet = new ethers.Wallet(Pkey, provider);
 const contractWithSigner = contract.connect(wallet);
 
-
+// async function reset(){
+//   const res=await contractWithSigner.tokenIdCounter(1);
+//   console.log(res.toString());
+// }
 async function generateAccount(seed) {
   // Generate a 256-bit hash from the string
   const sha256Hash = crypto.createHash('sha256').update(seed).digest('hex');
@@ -66,7 +69,7 @@ async function getBalance(email) {
     const balances = [];
     const data=[];
   
-    for (let j = 0; j < 1; j++) {
+    for (let j = 0; j < 2; j++) {
       try {
         console.log(j);
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
@@ -100,11 +103,12 @@ async function getBalance(email) {
   }
 
 
-// async function main(){
-//     const user = "hello@gmail.com";
-// const tokenIDs = [1,2];
-//  const res= await getBalance(user);
 
+
+// async function main(){
+// //     const user = "try7@gmail.com";
+// //  const res= await getBalance(user);
+//   const res= await reset();
 //  console.log(res);
 
 // }
