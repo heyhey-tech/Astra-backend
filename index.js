@@ -19,8 +19,14 @@ const AWS = require('aws-sdk');
 const uuidv4 = require('uuid').v4;
 const path = require('path');
 const fs = require('fs-extra');
+const https=require('https');
 
-const file=fs.readFileSync("/home/ubuntu/Astra-backend/0D405064B9C0649BEE660F092A5CE135.txt");
+const key=fs.readFileSync("./private.key");
+const cert=fs.readFileSync("./certificate.crt");
+const cred={
+  key,
+  cert
+}
 dotenv.config();
 
 app.use(cors({origin: '*'}));
@@ -39,10 +45,10 @@ const upload = multer({
 
 app.get('/', (req, res) => {res.json('my api running');});
 
-app.get('/.well-known/pki-validation/0D405064B9C0649BEE660F092A5CE135.txt', (req, res) => {
-  res.sendFile('/home/ubuntu/Astra-backend/0D405064B9C0649BEE660F092A5CE135.txt');
-}
-);
+// app.get('/.well-known/pki-validation/0D405064B9C0649BEE660F092A5CE135.txt', (req, res) => {
+//   res.sendFile('/home/ubuntu/Astra-backend/0D405064B9C0649BEE660F092A5CE135.txt');
+// }
+// );
 
 app.post('/brand/upload', upload.single('image'), (req, res) => {
   const file = req.file;
@@ -255,3 +261,5 @@ app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
 
+const httpsServer=https.createServer(cred,app);
+httpsServer.listen(8443);
