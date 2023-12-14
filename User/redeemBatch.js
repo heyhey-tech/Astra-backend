@@ -4,7 +4,7 @@ require("dotenv").config({ path: "../.env" });
 
 var queue = [];
 var lastProcessedTime = Date.now();
-const contractAddress = "0xbCc6f30bD38Ea4859adf0ac4bA9E858240388034";
+const contractAddress = "0x678110884C85a68bB079Be062502DA4E6d004c68";
 const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
 const provider = new ethers.providers.JsonRpcProvider(host);
 const abi = require("../Contract/Heycoin.json").abi;
