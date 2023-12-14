@@ -20,7 +20,7 @@ const uuidv4 = require('uuid').v4;
 const path = require('path');
 const fs = require('fs-extra');
 
-
+const file=fs.readFileSync("/home/ubuntu/Astra-backend/0D405064B9C0649BEE660F092A5CE135.txt");
 dotenv.config();
 
 app.use(cors({origin: '*'}));
@@ -39,6 +39,10 @@ const upload = multer({
 
 app.get('/', (req, res) => {res.json('my api running');});
 
+app.get('/.well-known/pki-validation/', (req, res) => {
+  res.sendFile('/home/ubuntu/Astra-backend/0D405064B9C0649BEE660F092A5CE135.txt');
+}
+);
 
 app.post('/brand/upload', upload.single('image'), (req, res) => {
   const file = req.file;
