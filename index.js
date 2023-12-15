@@ -236,7 +236,7 @@ app.get('/brand/airdrop-all', async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const {sums,total} = await airdropAllTime();
-    res.send(sums,total);
+    res.send({sums,total});
   } catch (err) {
     console.error(err);
     res.status(500).send('Error while fetching airdrop data');
@@ -275,7 +275,22 @@ app.get('/brand/redemption-all', async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const {sums,total} = await redemptionAllTime();
-    res.send(sums,total);
+    res.send({sums,total});
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
+// Endpoint to fetch ratio of redemptions to airdrops for all time
+app.get('/brand/percent-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const {sumA,totalA} = await airdropAllTime();
+    const {sumR,totalR} = await redemptionAllTime();
+    const percent = (totalR/totalA)*100;
+    res.send(percent);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error while fetching redemption data');
