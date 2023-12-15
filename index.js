@@ -20,6 +20,12 @@ const uuidv4 = require('uuid').v4;
 const path = require('path');
 const fs = require('fs-extra');
 const https=require('https');
+const airdropPast1hour = require('./Analytics/Airdrop/AirdropsPast1hour');
+const airdropAllTime = require('./Analytics/Airdrop/AirdropsAllTime');
+const airdropPast24hours = require('./Analytics/Airdrop/AirdropsPast24hours');
+const redemptionPast1hour = require('./Analytics/Redemption/RedemptionsPast1hour');
+const redemptionAllTime = require('./Analytics/Redemption/RedemptionsAllTime');
+const redemptionPast24hours = require('./Analytics/Redemption/RedemptionsPast24hours');
 
 const key=fs.readFileSync("./private.key");
 const cert=fs.readFileSync("./certificate.crt");
@@ -197,6 +203,85 @@ app.post('/brand/airdrop', async (req, res) => {
     res.status(400).send('Invalid token');
   }
 });
+
+// Endpoint to fetch airdrop data for the past 1 hour
+app.get('/brand/airdrop-1hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const results = await airdropPast1hour();
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching airdrop data');
+  }
+});
+
+// Endpoint to fetch airdrop data for the past 24 hours
+app.get('/brand/airdrop-24hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const results = await airdropPast24hours();
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching airdrop data');
+  }
+});
+
+// Endpoint to fetch airdrop data for all time
+app.get('/brand/airdrop-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const {sums,total} = await airdropAllTime();
+    res.send(sums,total);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching airdrop data');
+  }
+});
+
+// Endpoint to fetch redemption data for the past 1 hour
+app.get('/brand/redemption-1hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const results = await redemptionPast1hour();
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
+// Endpoint to fetch redemption data for the past 24 hours
+app.get('/brand/redemption-24hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const results = await redemptionPast24hours();
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
+// Endpoint to fetch redemption data for all time
+app.get('/brand/redemption-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const {sums,total} = await redemptionAllTime();
+    res.send(sums,total);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
 // Endpoint to fetch balance of a user
 app.post('/user/balance', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];

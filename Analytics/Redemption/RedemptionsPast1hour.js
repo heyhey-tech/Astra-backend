@@ -1,13 +1,9 @@
-// Import the required modules
-const fs = require("fs-extra");
 const ethers = require("ethers");
-const crypto = require('crypto');
-const web3 = require('web3');
 
 const contractAddress = "0x678110884C85a68bB079Be062502DA4E6d004c68";
 const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
 const provider = new ethers.providers.JsonRpcProvider(host);
-const abi = require("../Contract/Heycoin.json").abi;
+const abi = require("../../Contract/Heycoin.json").abi;
 const contract = new ethers.Contract(contractAddress, abi, provider);
 
 /**
@@ -17,17 +13,17 @@ const contract = new ethers.Contract(contractAddress, abi, provider);
 async function fetchAndAggregateRedemptions(tokenId) {
     // Define the time segments for aggregation
     const now = new Date();
-    const segments = [...Array(6)].map((_, i) => ({
-      start: new Date(now - (24 - (i * 4)) * 3600 * 1000),
-      end: new Date(now - (20 - (i * 4)) * 3600 * 1000),
-      sum: 0
+    const segments = [...Array(12)].map((_, i) => ({
+        start: new Date(now - (60 - i * 5) * 60 * 1000),
+        end: new Date(now - (55 - i * 5) * 60 * 1000),
+        sum: 0
     }));
   
     // Fetch events from the past 24 hours
     const currentBlock = await provider.getBlockNumber();
     const eventName = 'DiscountRedeemed'; // Actual event name
     const filter = contract.filters[eventName](null, tokenId); // Filter by tokenId
-    const events = await contract.queryFilter(filter, currentBlock - 5760, currentBlock); // Assuming 15s block times
+    const events = await contract.queryFilter(filter, currentBlock - 720, currentBlock); // Assuming 5s block times
   
     // Iterate over events and aggregate them into the corresponding time segment
     for (let event of events) {
@@ -48,7 +44,7 @@ async function fetchAndAggregateRedemptions(tokenId) {
  */
 async function scheduledFetchAndAggregate() {
     try {
-        const aggregatedData = await fetchAndAggregateRedemptions();
+        const aggregatedData = await fetchAndAggregateRedemptions(1);
         console.log('Aggregated Redemption Data:', aggregatedData);
         // Further processing or storage of aggregatedData can be done here
     } catch (error) {
