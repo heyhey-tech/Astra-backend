@@ -42,18 +42,18 @@ async function fetchAndAggregateRedemptions(tokenId) {
 /**
  * The main handler for scheduled execution to fetch and aggregate redemption events.
  */
-async function scheduledFetchAndAggregate() {
-    try {
-        const aggregatedData = await fetchAndAggregateRedemptions(1);
-        console.log('Aggregated Redemption Data:', aggregatedData);
-        // Further processing or storage of aggregatedData can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating redemption events:', error);
-    }
-}
+// async function scheduledFetchAndAggregate() {
+//     try {
+//         const aggregatedData = await fetchAndAggregateRedemptions(1);
+//         console.log('Aggregated Redemption Data:', aggregatedData);
+//         // Further processing or storage of aggregatedData can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating redemption events:', error);
+//     }
+// }
 
-// Example usage:
-scheduledFetchAndAggregate();
+// // Example usage:
+// scheduledFetchAndAggregate();
 
 // Export the fetchAndAggregateRedemptions function if it needs to be used elsewhere
 module.exports = fetchAndAggregateRedemptions;

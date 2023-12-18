@@ -43,20 +43,20 @@ async function fetchAndAggregateAirdrops() {
 
 /**
  * The main handler for scheduled execution to fetch and aggregate AirdropSuccessful events.
- */
-async function scheduledFetchAndAggregate() {
-    try {
-        const { sums, total } = await fetchAndAggregateAirdrops();
-        console.log('Aggregated Airdrop Data:', sums);
-        console.log('Total number of airdrops:', total);
-        // Further processing or storage of sums and total can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating airdrop events:', error);
-    }
-}
+//  */
+// async function scheduledFetchAndAggregate() {
+//     try {
+//         const { sums, total } = await fetchAndAggregateAirdrops();
+//         console.log('Aggregated Airdrop Data:', sums);
+//         console.log('Total number of airdrops:', total);
+//         // Further processing or storage of sums and total can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating airdrop events:', error);
+//     }
+// }
 
-// Example usage:
-scheduledFetchAndAggregate();
+// // Example usage:
+// scheduledFetchAndAggregate();
 
 // Export the fetchAndAggregateAirdrops function if it needs to be used elsewhere
 module.exports = fetchAndAggregateAirdrops;

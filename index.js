@@ -275,6 +275,8 @@ app.get('/brand/redemption-all', async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const {sums,total} = await redemptionAllTime();
+    console.log("sums:",sums);
+    console.log("total:",total);
     res.send({sums,total});
   } catch (err) {
     console.error(err);
@@ -287,10 +289,18 @@ app.get('/brand/percent-all', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   try {
     jwt.verify(token, secretKey);
-    const {sumA,totalA} = await airdropAllTime();
-    const {sumR,totalR} = await redemptionAllTime();
+    const res1 = await airdropAllTime();
+    const totalA = res1.total;
+    console.log("totalA:",totalA)
+    const  res2 = await redemptionAllTime();
+    const totalR = res2.total;
+    console.log("totalR:",totalR)
+
+    // console.log("sumA:",totalA);
+    // console.log("sumR:",totalR);
     const percent = (totalR/totalA)*100;
-    res.send(percent);
+    console.log("percent:",percent);
+    res.send({'percent':percent});
   } catch (err) {
     console.error(err);
     res.status(500).send('Error while fetching redemption data');

@@ -34,9 +34,12 @@ async function fetchAndAggregateRedemptions() {
         totalRedemptions += segment.sum;
     }
 
+    console.log('Total number of redemptions:', totalRedemptions);
+    const sum = segments.map(s => s.sum);
+    console.log('Aggregated Redemption Data:', sum);
     // Return the aggregated sums and total number of airdrops
     return {
-        sums: segments.map(s => s.sum),
+        sums: sum,
         total: totalRedemptions
     };
 }
@@ -44,19 +47,19 @@ async function fetchAndAggregateRedemptions() {
 /**
  * The main handler for scheduled execution to fetch and aggregate AirdropSuccessful events.
  */
-async function scheduledFetchAndAggregate() {
-    try {
-        const { sums, total } = await fetchAndAggregateRedemptions();
-        console.log('Aggregated Redemption Data:', sums);
-        console.log('Total number of redemptions:', total);
-        // Further processing or storage of sums and total can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating airdrop events:', error);
-    }
-}
+// async function scheduledFetchAndAggregate() {
+//     try {
+//         const { sums, total } = await fetchAndAggregateRedemptions();
+//         console.log('Aggregated Redemption Data:', sums);
+//         console.log('Total number of redemptions:', total);
+//         // Further processing or storage of sums and total can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating airdrop events:', error);
+//     }
+// }
 
-// Example usage:
-scheduledFetchAndAggregate();
+// // Example usage:
+// scheduledFetchAndAggregate();
 
 // Export the fetchAndAggregateAirdrops function if it needs to be used elsewhere
 module.exports = fetchAndAggregateRedemptions;
