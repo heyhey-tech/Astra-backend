@@ -6,8 +6,8 @@ const crypto = require('crypto');
 const web3 = require('web3');
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
 const readS3Data = require("../Database_scripts/Scripts/Data_read");
-
-const contractAddress = "0x678110884C85a68bB079Be062502DA4E6d004c68";
+require('dotenv').config({ path: '.env'});
+const contractAddress = process.env.CONTRACT_ADDRESS
 const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
 const provider = new ethers.providers.JsonRpcProvider(host);
 const abi = require("../Contract/Heycoin.json").abi;
