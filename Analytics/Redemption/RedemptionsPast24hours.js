@@ -21,8 +21,7 @@ async function fetchAndAggregateRedemptions(tokenId) {
   
     // Fetch events from the past 24 hours
     const currentBlock = await provider.getBlockNumber();
-    const eventName = 'DiscountRedeemed'; // Actual event name
-    const filter = contract.filters[eventName](null, tokenId); // Filter by tokenId
+    const filter = contract.filters.DiscountRedeemed(null, tokenId, null); // Filter by tokenId
     const events = await contract.queryFilter(filter, currentBlock - 17280, currentBlock); // Assuming 5s block times
   
     // Iterate over events and aggregate them into the corresponding time segment
@@ -42,18 +41,18 @@ async function fetchAndAggregateRedemptions(tokenId) {
 /**
  * The main handler for scheduled execution to fetch and aggregate redemption events.
  */
-// async function scheduledFetchAndAggregate() {
-//     try {
-//         const aggregatedData = await fetchAndAggregateRedemptions(1);
-//         console.log('Aggregated Redemption Data:', aggregatedData);
-//         // Further processing or storage of aggregatedData can be done here
-//     } catch (error) {
-//         console.error('Error fetching and aggregating redemption events:', error);
-//     }
-// }
+async function scheduledFetchAndAggregate(tokenId) {
+    try {
+        const aggregatedData = await fetchAndAggregateRedemptions(tokenId);
+        console.log('Aggregated Redemption Data:', aggregatedData);
+        // Further processing or storage of aggregatedData can be done here
+    } catch (error) {
+        console.error('Error fetching and aggregating redemption events:', error);
+    }
+}
 
-// // Example usage:
-// scheduledFetchAndAggregate();
+// Example usage:
+scheduledFetchAndAggregate(1);
 
 // Export the fetchAndAggregateRedemptions function if it needs to be used elsewhere
 module.exports = fetchAndAggregateRedemptions;
