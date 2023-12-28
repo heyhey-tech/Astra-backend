@@ -64,7 +64,7 @@ async function redeem(email, tokenID, org_name) {
             
             try {
                 const coupon = await readCoupon('project-astra-bucket1');
-                const res = await contractWithSigner.redeem(tokenID, { gasLimit: 1000000 });
+                const res = await contractWithSigner.redeem(tokenID,1, { gasLimit: 1000000 });
                 // console.log("Transaction hash:", res);
                 // console.log(res);
                 

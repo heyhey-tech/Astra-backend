@@ -98,6 +98,7 @@ app.post('/brand/createToken', async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     try {
       jwt.verify(token, secretKey);
+      //data should have a field inventory which basically is the number of initial tokens
       const data=req.body.data;
       const org_name=req.body.org_name;
       console.log(org_name);
@@ -188,11 +189,12 @@ app.post('/brand/airdrop', async (req, res) => {
   try {
     jwt.verify(token, secretKey);
     const users = req.body.users;
-    const tokenIDs = req.body.tokenIDs;
-    const amounts = req.body.amounts;
+    // users is an array of email ids while token and amount is a single value
+    const tokenID = req.body.tokenIDs;
+    const amount = req.body.amounts;
     console.log(users);
     try {
-      const results = await airdrop(users, tokenIDs, amounts);
+      const results = await airdrop(users, tokenID, amount);
       res.send(results);
     } catch (err) {
       console.error(err);
@@ -295,12 +297,29 @@ app.get('/brand/percent-all', async (req, res) => {
     const  res2 = await redemptionAllTime();
     const totalR = res2.total;
     console.log("totalR:",totalR)
-
-    // console.log("sumA:",totalA);
-    // console.log("sumR:",totalR);
     const percent = (totalR/totalA)*100;
     console.log("percent:",percent);
     res.send({'percent':percent});
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
+// Endpoint to get total transactions
+app.get('/brand/percent-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    jwt.verify(token, secretKey);
+    const res1 = await airdropAllTime();
+    const totalA = res1.total;
+    console.log("totalA:",totalA)
+    const  res2 = await redemptionAllTime();
+    const totalR = res2.total;
+    console.log("totalR:",totalR)
+    const sum = totalA+totalR;
+    console.log("sum:",sum);
+    res.send({'Total':sum});
   } catch (err) {
     console.error(err);
     res.status(500).send('Error while fetching redemption data');

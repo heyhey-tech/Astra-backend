@@ -31,7 +31,7 @@ async function generateAccount(seed) {
 }
 
 //Data contains Organisation name and meta data for the token 
-async function airdrop(emails,tokenIDs,amounts) {
+async function airdrop(emails,tokenID,amount) {
     const users=[];
 
     for (let i=0;i<emails.length;i++){
@@ -51,7 +51,7 @@ async function airdrop(emails,tokenIDs,amounts) {
     console.log("Initiating airdrop...");
     try {
 
-        const res= await contractWithSigner.airdropBatch(users, tokenIDs, amounts,{gasLimit: 1000000});
+        const res= await contractWithSigner.airdropBatch(users, tokenID, amount,{gasLimit: 1000000});
         console.log("Transaction hash:", res.hash);
         return res.hash;
     } catch (err) {
