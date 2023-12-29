@@ -6,7 +6,8 @@ const crypto = require('crypto');
 // rpcnode details
 // const { tessera, quorum } = require("../keys.js");
 // const host = 'http://127.0.0.1:8545';
-const host= 'http://43.205.140.72'
+const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
+// const provider = new ethers.providers.JsonRpcProvider(host);
 // Initialize a Quorum node's RPC endpoint
 const web3 = new Web3(host); // Replace with your Quorum node's RPC endpoint
 

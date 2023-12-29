@@ -27,7 +27,7 @@ function checkUserInDB(email) {
   });
 }
 
-checkUserInDB('iitslkdjf').then((result) => console.log(result));
+// checkUserInDB('iitslkdjf').then((result) => console.log(result));
 module.exports = checkUserInDB;
 
 // getCodeFromRDS('hello@gmail.com')

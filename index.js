@@ -14,6 +14,8 @@ const checkBrandInDB = require('./Org_Scripts/checkBrandInDB.js');
 const registerAccount = require('./Chain_Scripts/register.js');
 const getAddressFromRDS = require('./Scripts/read_User_Address.js');
 const airdrop = require('./Chain_Scripts/airdrop.js');
+const getTokenAirdroppedAmount = require('./Chain_Scripts/readAirdropMap.js');
+const getTokenLimit = require('./Chain_Scripts/readTokenLimit.js');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const secretKey = 'secret-key';
@@ -37,7 +39,6 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.json('my api running');});
 
-// app.get('/.well-known/pki-validation/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt', (req, res) => {res.sendFile("/home/ubuntu/Astra-backend/31E1F8C7E5E02E8BE204AC0E1669E6D5.txt");});
 
 // Endpoint to receive email address from user
 app.post('/user/register', async (req, res) => {
@@ -93,41 +94,45 @@ app.post('/user/verify-code', (req, res) => {
     getCodeFromRDS(email)
     .then(async (result) => {
         if (code !== result) {
-                return res.status(400).json({ error: 'Invalid verification code' });
-            }else{
-                console.log("code is same as result");
-                getPasswordFromRDS(email).then(async (password) => {
+            return res.status(400).json({ error: 'Invalid verification code' });
+        } else {
+            console.log("code is same as result");
+            getPasswordFromRDS(email).then(async (password) => {
 
-                    addUserToRDS(email,email,password);
+                addUserToRDS(email, email, password);
+
+                var tokenAirdropped = await getTokenAirdroppedAmount(1);
+                var tokenLimit = await getTokenLimit(1);
+                console.log("tokenAirdropped:", tokenAirdropped, "tokenLimit:", tokenLimit);
+                if (parseInt(tokenAirdropped) < parseInt(tokenLimit)) {
                     // Call airdrop function without await and handle the promise
-                    airdrop([email], ["1"], [1],password).then(txHash => {
-                      // You can log the transaction hash or take any other action here
-                      console.log("Airdrop transaction hash:", txHash);
-                    }).catch(error => {
-                      // Log the error that occurred during the airdrop
-                      console.error("Error occurred during airdrop:", error);
-
-                }).catch((error) => {
-                    console.error(error);
-                    return res.status(400).json({ error: 'Internal server error while fetching password' });
-                });
-              });
-
+                    airdrop([email], "1", 1, password)
+                        .then(txHash => {
+                            // You can log the transaction hash or take any other action here
+                            console.log("Airdrop transaction hash:", txHash);
+                        })
+                        .catch(error => {
+                            // Log the error that occurred during the airdrop
+                            console.error("Error occurred during airdrop:", error);
+                        });
+                }else{
+                    console.log("Airdrop limit reached");
+                }
 
                 deleteRowsFromRDSTemp(email)
-                .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
-                .catch((error) => console.error(error));
-                
+                    .then((affectedRows) => console.log(`${affectedRows} rows deleted from temp table`))
+                    .catch((error) => console.error(error));
+
                 return res.status(200).json({ message: 'Verification code is correct, New User Registered' });
-                }
-            }
-        )
-    .catch((error) => {
+            }).catch((error) => {
+                console.error(error);
+                return res.status(400).json({ error: 'Internal server error while fetching password' });
+            });
+        }
+    }).catch((error) => {
         console.error(error);
         return res.status(400).json({ error: 'Internal server error while fetching verification code' });
-        }
-    )
-
+    });
 });
 
 
