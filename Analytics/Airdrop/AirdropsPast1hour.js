@@ -11,6 +11,11 @@ const contract = new ethers.Contract(contractAddress, abi, provider);
  * @returns {Array} An array of sums of AirdropSuccessful events in 5-minute segments for the last hour.
  */
 async function fetchAndAggregateAirdrops(tokenId) {
+    // Check if tokenId is provided, otherwise assign null
+    if (tokenId === undefined) {
+        tokenId = null;
+    }
+
     // Define the time segments for aggregation
     const now = new Date();
     const segments = [...Array(12)].map((_, i) => ({
@@ -37,22 +42,21 @@ async function fetchAndAggregateAirdrops(tokenId) {
     // Return the aggregated sums
     return segments.map(s => s.sum);
 }
-
 /**
  * The main handler for scheduled execution to fetch and aggregate AirdropSuccessful events.
  */
-async function scheduledFetchAndAggregate(tokenId) {
-    try {
-        const aggregatedData = await fetchAndAggregateAirdrops(tokenId);
-        console.log('Aggregated Airdrop Data:', aggregatedData);
-        // Further processing or storage of aggregatedData can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating airdrop events:', error);
-    }
-}
+// async function scheduledFetchAndAggregate(tokenId) {
+//     try {
+//         const aggregatedData = await fetchAndAggregateAirdrops(tokenId);
+//         console.log('Aggregated Airdrop Data:', aggregatedData);
+//         // Further processing or storage of aggregatedData can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating airdrop events:', error);
+//     }
+// }
 
-// Example usage:
-scheduledFetchAndAggregate(1);
+// // Example usage:
+// scheduledFetchAndAggregate();
 
 // Export the fetchAndAggregateAirdrops function if it needs to be used elsewhere
 module.exports = fetchAndAggregateAirdrops;

@@ -51,7 +51,7 @@ async function airdrop(emails,tokenID,amount) {
     console.log("Initiating airdrop...");
     try {
 
-        const res= await contractWithSigner.airdropBatch(users, tokenID, amount,{gasLimit: 1000000});
+        const res= await contractWithSigner.airdrop(users, tokenID, amount,{gasLimit: 1000000});
         console.log("Transaction hash:", res.hash);
         return res.hash;
     } catch (err) {

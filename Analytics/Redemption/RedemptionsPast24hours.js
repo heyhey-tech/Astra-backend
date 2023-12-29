@@ -11,6 +11,9 @@ const contract = new ethers.Contract(contractAddress, abi, provider);
  * @returns {Array} An array of sums of redemption events in 4-hour segments for the last 24 hours.
  */
 async function fetchAndAggregateRedemptions(tokenId) {
+    if (tokenId === undefined) {
+      tokenId = null;
+    }
     // Define the time segments for aggregation
     const now = new Date();
     const segments = [...Array(24)].map((_, i) => ({
@@ -41,18 +44,18 @@ async function fetchAndAggregateRedemptions(tokenId) {
 /**
  * The main handler for scheduled execution to fetch and aggregate redemption events.
  */
-async function scheduledFetchAndAggregate(tokenId) {
-    try {
-        const aggregatedData = await fetchAndAggregateRedemptions(tokenId);
-        console.log('Aggregated Redemption Data:', aggregatedData);
-        // Further processing or storage of aggregatedData can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating redemption events:', error);
-    }
-}
+// async function scheduledFetchAndAggregate(tokenId) {
+//     try {
+//         const aggregatedData = await fetchAndAggregateRedemptions(tokenId);
+//         console.log('Aggregated Redemption Data:', aggregatedData);
+//         // Further processing or storage of aggregatedData can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating redemption events:', error);
+//     }
+// }
 
-// Example usage:
-scheduledFetchAndAggregate(1);
+// // Example usage:
+// scheduledFetchAndAggregate(1);
 
 // Export the fetchAndAggregateRedemptions function if it needs to be used elsewhere
 module.exports = fetchAndAggregateRedemptions;

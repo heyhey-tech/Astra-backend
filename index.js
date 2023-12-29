@@ -190,8 +190,8 @@ app.post('/brand/airdrop', async (req, res) => {
     jwt.verify(token, secretKey);
     const users = req.body.users;
     // users is an array of email ids while token and amount is a single value
-    const tokenID = req.body.tokenIDs;
-    const amount = req.body.amounts;
+    const tokenID = req.body.tokenID;
+    const amount = req.body.amount;
     console.log(users);
     try {
       const results = await airdrop(users, tokenID, amount);
@@ -306,8 +306,96 @@ app.get('/brand/percent-all', async (req, res) => {
   }
 });
 
+// Endpoint to fetch airdrop data for the past 1 hour
+app.get('/brand/tokenAirdrop-1hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const tokenId = req.query.tokenID; // Get tokenId from the request body
+  try {
+    jwt.verify(token, secretKey);
+    const results = await airdropPast1hour(tokenId); // Pass tokenId to the function
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching airdrop data');
+  }
+});
+
+// Endpoint to fetch airdrop data for the past 24 hours
+app.get('/brand/tokenAirdrop-24hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const tokenId = req.query.tokenID; // Get tokenId from the request body
+  try {
+    jwt.verify(token, secretKey);
+    const results = await airdropPast24hours(tokenId); // Pass tokenId to the function
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching airdrop data');
+  }
+});
+
+// Endpoint to fetch airdrop data for all time
+app.get('/brand/tokenAirdrop-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  // console.log(req.que);
+  const tokenId = req.query.tokenID; // Get tokenId from the request parameters
+  console.log(tokenId);
+  try {
+    jwt.verify(token, secretKey);
+    const { sums, total } = await airdropAllTime(tokenId); // Pass tokenId to the function
+    res.send({ sums, total });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching airdrop data');
+  }
+});
+
+// Endpoint to fetch redemption data for the past 1 hour
+app.get('/brand/tokenRedemption-1hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const tokenId = req.query.tokenID; // Get tokenId from the request body
+  try {
+    jwt.verify(token, secretKey);
+    const results = await redemptionPast1hour(tokenId); // Pass tokenId to the function
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
+// Endpoint to fetch redemption data for the past 24 hours
+app.get('/brand/token-Redemption-24hr', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const tokenId = req.query.tokenID; // Get tokenId from the request body
+  try {
+    jwt.verify(token, secretKey);
+    const results = await redemptionPast24hours(tokenId); // Pass tokenId to the function
+    res.send(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
+// Endpoint to fetch redemption data for all time
+app.get('/brand/tokenRedemption-all', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const tokenId = req.query.tokenID; // Get tokenId from the request body
+  try {
+    jwt.verify(token, secretKey);
+    const { sums, total } = await redemptionAllTime(tokenId); // Pass tokenId to the function
+    console.log("sums:", sums);
+    console.log("total:", total);
+    res.send({ sums, total });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error while fetching redemption data');
+  }
+});
+
 // Endpoint to get total transactions
-app.get('/brand/percent-all', async (req, res) => {
+app.get('/brand/sum-all', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   try {
     jwt.verify(token, secretKey);

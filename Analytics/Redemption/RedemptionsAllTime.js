@@ -11,6 +11,9 @@ const contract = new ethers.Contract(contractAddress, abi, provider);
  * @returns {Array} An array of sums of AirdropSuccessful events in 10 segments since the contract deployment.
  */
 async function fetchAndAggregateRedemptions(tokenId) {
+    if (tokenId === undefined) {
+        tokenId = null;
+    }
     // Fetch events since the contract deployment
     const currentBlock = await provider.getBlockNumber();
     const deploymentBlock = parseInt(process.env.DEPLOYMENT_BLOCK); // The block number when the contract was deployed
@@ -45,19 +48,19 @@ async function fetchAndAggregateRedemptions(tokenId) {
 /**
  * The main handler for scheduled execution to fetch and aggregate AirdropSuccessful events.
  */
-async function scheduledFetchAndAggregate(tokenId) {
-    try {
-        const { sums, total } = await fetchAndAggregateRedemptions(tokenId);
-        console.log('Aggregated Redemption Data:', sums);
-        console.log('Total number of redemptions:', total);
-        // Further processing or storage of sums and total can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating airdrop events:', error);
-    }
-}
+// async function scheduledFetchAndAggregate(tokenId) {
+//     try {
+//         const { sums, total } = await fetchAndAggregateRedemptions(tokenId);
+//         console.log('Aggregated Redemption Data:', sums);
+//         console.log('Total number of redemptions:', total);
+//         // Further processing or storage of sums and total can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating airdrop events:', error);
+//     }
+// }
 
-// Example usage:
-scheduledFetchAndAggregate(1);
+// // Example usage:
+// scheduledFetchAndAggregate(1);
 
 // Export the fetchAndAggregateAirdrops function if it needs to be used elsewhere
 module.exports = fetchAndAggregateRedemptions;
