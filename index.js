@@ -39,7 +39,6 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {res.json('my api running');});
 
-
 // Endpoint to receive email address from user
 app.post('/user/register', async (req, res) => {
     const email = req.body.email;
