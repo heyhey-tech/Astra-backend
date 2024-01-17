@@ -69,7 +69,7 @@ async function getBalance(email) {
     const balances = [];
     const data=[];
   
-    for (let j = 0; j < 2; j++) {
+    for (let j = 1; j <= 2; j++) {
       try {
         console.log(j);
         const balance = await contractWithSigner.balanceOfBatch([user], [j]);
@@ -78,8 +78,8 @@ async function getBalance(email) {
           const res_data= await readS3Data('project-astra-bucket1', j, 'toysrus-nfts/');
           tokenIds.push(j);
           balances.push(balance.toString());
-          console.log(res_data);
-          data.push(res_data);
+          console.log(res_data); 
+          data.push(res_data); 
         }
       } catch (err) {
         if(err==="The specified key does not exist."){
@@ -92,7 +92,6 @@ async function getBalance(email) {
       }
     }
     
-    // const Token_name = results[0].Token_data[results[0].tokenId].name;
 
     const result = tokenIds.map((tokenId, index) => ({
       tokenId,

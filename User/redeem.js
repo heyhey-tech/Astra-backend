@@ -80,6 +80,5 @@ async function redeem(email, tokenID, org_name) {
     }
 
 }
-// redeem('hello@gmail.com', 1);
 
 module.exports = redeem;

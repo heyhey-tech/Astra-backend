@@ -10,6 +10,7 @@ const getUsers = require('./Brand/getAllUsers');
 const cors = require('cors');
 const airdrop = require('./Brand/airDrop');
 const getBalance = require('./User/displayBalance');
+const fetchRedeemedDiscounts = require('./User/getRedeemedDiscounts');
 const redeem = require('./User/redeem');
 const jwt = require('jsonwebtoken');
 const { errorMonitor } = require('nodemailer/lib/xoauth2');
@@ -440,6 +441,29 @@ app.post('/user/balance', async (req, res) => {
         });
       }
       res.send(final_res);   
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error while fetching balance');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).send('Invalid token');
+  }
+});
+
+// Endpoint to fetch redeemed discounts of a user
+app.post('/user/redeemedDiscounts', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+//   console.log(token);
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const user = decoded.email;
+    // 
+    console.log(user);
+    try {
+      const results = await fetchRedeemedDiscounts(user);
+
+      res.send(results);   
     } catch (err) {
       console.error(err);
       res.status(500).send('Error while fetching balance');
