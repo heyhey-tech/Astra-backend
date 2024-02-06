@@ -106,19 +106,19 @@ async function fetchRedeemedDiscounts(email) {
 /**
  * The main handler for scheduled execution to fetch and aggregate AirdropSuccessful events.
 //  */
-async function scheduledFetchAndAggregate(email) {
+// async function scheduledFetchAndAggregate(email) {
 
-    try {
-        const res= await fetchRedeemedDiscounts(email);
-        console.log("RESULT:",res);
-        // Further processing or storage of sums and total can be done here
-    } catch (error) {
-        console.error('Error fetching and aggregating airdrop events:', error);
-    }
-}
+//     try {
+//         const res= await fetchRedeemedDiscounts(email);
+//         console.log("RESULT:",res);
+//         // Further processing or storage of sums and total can be done here
+//     } catch (error) {
+//         console.error('Error fetching and aggregating airdrop events:', error);
+//     }
+// }
 
-// // Example usage:
-scheduledFetchAndAggregate("caleb.franklin@gmail.com");
+// // // Example usage:
+// scheduledFetchAndAggregate("caleb.franklin@gmail.com");
 
 // Export the fetchAndAggregateAirdrops function if it needs to be used elsewhere
 module.exports = fetchRedeemedDiscounts;

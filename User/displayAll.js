@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs-extra");
-const createS3Token = require("../Database_scripts/Scripts/NFT_new_creation");
 const readAllS3Files = require("../Database_scripts/Scripts/Real_all_files");
 var ethers = require("ethers");
 

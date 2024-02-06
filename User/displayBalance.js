@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const web3 = require('web3');
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
 const readS3Data = require("../Database_scripts/Scripts/Data_read");
+const fetchAllDiscounts=require("./displayAll");
 require('dotenv').config({ path: '.env'});
 const contractAddress = process.env.CONTRACT_ADDRESS
 const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
@@ -69,16 +70,29 @@ async function getBalance(email) {
     const balances = [];
     const data=[];
   
-    for (let j = 1; j <= 2; j++) {
+
+    const org_name = "toysrus-nfts";
+    const content = await fetchAllDiscounts(org_name);
+
+
+    const contentLength = Object.keys(content).length;
+    console.log("Length of content:", contentLength);
+
+    const keys= Object.keys(content);
+    console.log("Keys:",keys);
+
+
+    for (let j = 1; j <= contentLength; j++) {
       try {
-        console.log(j);
-        const balance = await contractWithSigner.balanceOfBatch([user], [j]);
-        // console.log(balance.toString());
+        const tokenID =keys[j-1];
+        
+        const balance = await contractWithSigner.balanceOfBatch([user], [tokenID]);
+        console.log("Balance for token id:",tokenID,"->",balance.toString());
         if (balance.toString() !== '0') {
-          const res_data= await readS3Data('project-astra-bucket1', j, 'toysrus-nfts/');
-          tokenIds.push(j);
+          const res_data= content[tokenID.toString()]
+          tokenIds.push(tokenID.toString());
           balances.push(balance.toString());
-          console.log(res_data); 
+          // console.log(res_data); 
           data.push(res_data); 
         }
       } catch (err) {
@@ -93,11 +107,14 @@ async function getBalance(email) {
     }
     
 
+  
+
     const result = tokenIds.map((tokenId, index) => ({
       tokenId,
       balance: balances[index],
       Token_data: data[index],
     }));
+
     return result;
   }
 
@@ -105,10 +122,7 @@ async function getBalance(email) {
 
 
 // async function main(){
-// //     const user = "try7@gmail.com";
-// //  const res= await getBalance(user);
-//   const res= await reset();
-//  console.log(res);
+
 
 // }
 // main();

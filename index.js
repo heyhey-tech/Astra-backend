@@ -426,21 +426,21 @@ app.post('/user/balance', async (req, res) => {
     console.log(user);
     try {
       const results = await getBalance(user);
-      console.log(results);
-      const final_res=[];
-      for (let i = 0; i < results.length; i++) {
-        const Token = results[i].Token_data[results[i].tokenId];
-        // console.log("TOKEN:",Token);
-        if(Token===undefined){
-          continue;
-        }
-        final_res.push({
-          tokenId: results[i].tokenId,
-          balance: results[i].balance,
-          Token_data: Token,
-        });
-      }
-      res.send(final_res);   
+      res.send(results);   
+      // const final_res=[];
+      // for (let i = 0; i < results.length; i++) {
+      //   const Token = results[i].Token_data[results[i].tokenId];
+
+      //   if(Token===undefined){
+      //     continue;
+      //   }
+      //   final_res.push({
+      //     tokenId: results[i].tokenId,
+      //     balance: results[i].balance,
+      //     Token_data: Token,
+      //   });
+      // }
+      // res.send(final_res);   
     } catch (err) {
       console.error(err);
       res.status(500).send('Error while fetching balance');
