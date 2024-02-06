@@ -15,7 +15,7 @@ const contractWithSigner = contract.connect(wallet);
 async function CreateToken(org_name,data) {
     console.log("Creating token...");
     try {
-        const limit = data.Inventory;
+        const limit = 1000;
         const res= await contractWithSigner.createToken(limit,{gasLimit: 1000000});
                 console.log("Transaction hash:", res.hash);
     } catch (err) {
