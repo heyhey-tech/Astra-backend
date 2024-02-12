@@ -98,9 +98,9 @@ app.post('/brand/upload', upload.single('image'), (req, res) => {
 });
 
 app.post('/brand/createCampaign', async(req,res)=>{
-  // const token = req.headers.authorization.split(' ')[1];
+  const token = req.headers.authorization.split(' ')[1];
   try {
-    // jwt.verify(token, secretKey);
+    jwt.verify(token, secretKey);
     //data should have a field inventory which basically is the number of initial tokens
     const org_name=req.body.org_name;
     const campaign_name=req.body.campaign_name;
