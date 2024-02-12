@@ -5,10 +5,12 @@ const dotenv = require('dotenv');
 const app = express();
 const CreateToken = require('./Brand/createDiscount');
 const fetchAllDiscounts = require('./Brand/displayAll');
+const fetchAllCampaigns = require('./Brand/displayCampaigns');
 const edit = require('./Brand/editDiscount');
 const getUsers = require('./Brand/getAllUsers');
 const cors = require('cors');
 const airdrop = require('./Brand/airDrop');
+const createCampaign=require('./Brand/createCampaign');
 const getBalance = require('./User/displayBalance');
 const fetchRedeemedDiscounts = require('./User/getRedeemedDiscounts');
 const redeem = require('./User/redeem');
@@ -27,6 +29,7 @@ const airdropPast24hours = require('./Analytics/Airdrop/AirdropsPast24hours');
 const redemptionPast1hour = require('./Analytics/Redemption/RedemptionsPast1hour');
 const redemptionAllTime = require('./Analytics/Redemption/RedemptionsAllTime');
 const redemptionPast24hours = require('./Analytics/Redemption/RedemptionsPast24hours');
+
 
 const key=fs.readFileSync("./private.key");
 const cert=fs.readFileSync("./certificate.crt");
@@ -94,6 +97,28 @@ app.post('/brand/upload', upload.single('image'), (req, res) => {
   }
 });
 
+app.post('/brand/createCampaign', async(req,res)=>{
+  // const token = req.headers.authorization.split(' ')[1];
+  try {
+    // jwt.verify(token, secretKey);
+    //data should have a field inventory which basically is the number of initial tokens
+    const org_name=req.body.org_name;
+    const campaign_name=req.body.campaign_name;
+    console.log(org_name);
+    try {
+        await createCampaign(org_name,campaign_name);
+        res.send('Campaign created successfully');
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Error creating Campaign');
+      }
+  } catch (err) {
+    console.error(err);
+    res.status(400).send('Invalid token');
+  }
+
+});
+
 app.post('/brand/createToken', async (req, res) => {
     // console.log(req);
     const token = req.headers.authorization.split(' ')[1];
@@ -102,9 +127,10 @@ app.post('/brand/createToken', async (req, res) => {
       //data should have a field inventory which basically is the number of initial tokens
       const data=req.body.data;
       const org_name=req.body.org_name;
+      const campaign_name=req.body.campaign_name;
       console.log(org_name);
       try {
-          await CreateToken(org_name,data);
+          await CreateToken(org_name,campaign_name,data);
           res.send('Token created successfully');
         } catch (err) {
           console.error(err);
@@ -137,17 +163,18 @@ app.get('/brand/getUsers', async (req, res) => {
 
 
 // Endpoint to fetch all the discounts
-app.get('/brand/display-all', async (req, res) => {
+app.get('/brand/display-all-discounts', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   try {
     // console.log("here::")
     jwt.verify(token, secretKey);
     // console.log("query:",req?.query);
     const org_name=req.query.org_name;
+    const campaign_name=req.query.campaign_name;
     
       console.log("name:",org_name);
       // should return a json of the metadata of all the discounts
-      const results = await fetchAllDiscounts(org_name);
+      const results = await fetchAllDiscounts(org_name,campaign_name);
       if(results instanceof Error){
         res.status(400).send('Error fetching discounts');
       }else{
@@ -160,6 +187,31 @@ app.get('/brand/display-all', async (req, res) => {
     res.status(400).send('Invalid token');
   }
 });
+
+// Endpoint to fetch all the Campaigns
+app.get('/brand/display-campaigns', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  try {
+    // console.log("here::")
+    jwt.verify(token, secretKey);
+    // console.log("query:",req?.query);
+    const org_name=req.query.org_name;
+    
+      // should return a json of the metadata of all the discounts
+      const results = await fetchAllCampaigns(org_name);
+      if(results instanceof Error){
+        res.status(400).send('Error fetching Campaigns');
+      }else{
+        res.send(results);
+
+      }
+   
+  } catch (err) {
+    console.error(err);
+    res.status(400).send('Invalid token');
+  }
+});
+
 
 // Endpoint to edit the metadata of a discount with a given id
 app.post('/brand/edit-discount', async (req, res) => {

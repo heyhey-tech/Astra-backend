@@ -1,17 +1,15 @@
 const path = require("path");
 const fs = require("fs-extra");
 const createS3Token = require("../Database_scripts/Scripts/NFT_new_creation");
-const readAllS3Files = require("../Database_scripts/Scripts/Real_all_files");
+const readAllS3Folders= require("../Database_scripts/Scripts/Read_Folders");
 var ethers = require("ethers");
 
 
 
 
-async function fetchAllDiscounts(Organisation_Name,campaignName) {
+async function fetchAllCampaigns(Organisation_Name) {
 
-    const content =  await readAllS3Files(Organisation_Name,campaignName);
-
-    
+    const content =  await readAllS3Folders(Organisation_Name);
 
     // console.log(content);
     return content;
@@ -26,4 +24,4 @@ async function fetchAllDiscounts(Organisation_Name,campaignName) {
 //     console.log(content[tokenid.toString()])
 //   }
 // main();
-module.exports = fetchAllDiscounts;
+module.exports = fetchAllCampaigns;

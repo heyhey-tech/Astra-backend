@@ -6,7 +6,9 @@ const access_key = process.env.ACCESS_KEY;
 const secret_key = process.env.SECRET;
 
 
-async function readAllS3Files(folderName) {
+
+
+async function readAllS3Files(org_name,folderName) {
   const s3 = new AWS.S3({
   accessKeyId: access_key,
       secretAccessKey: secret_key,
@@ -14,7 +16,7 @@ async function readAllS3Files(folderName) {
   const bucketName = 'project-astra-bucket1';
   const params = {
     Bucket: bucketName,
-    Prefix: `${folderName}/`,
+    Prefix: `${org_name}/${folderName}/`,
   };
 
   try {

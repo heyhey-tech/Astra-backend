@@ -40,66 +40,63 @@ async function checkFolderExists(bucketName, folderName,s3) {
   }
 
 
-async function createS3Token(bucketName,Organisation_name, data) {
+async function createS3Token(bucketName,Organisation_name, Campaign_name,token_id,data) {
   // const accessKeyId= process.env.ACCESS_KEY;
   // const secretAccessKey= process.env.SECRET;
 
   console.log(access_key);
   console.log(secret_key);
 
-  const Organisation_Name = `${Organisation_name}/`
+  const Campaign_Folder = `${Organisation_name}/${Campaign_name}/`
   const s3 = new AWS.S3({
       accessKeyId: access_key,
       secretAccessKey: secret_key,
   });
   // const Organisation_Name = data.org_name;
-  console.log(Organisation_Name);
+  console.log(Campaign_Folder);
 
 
-    const folder_exits = await checkFolderExists(bucketName, Organisation_Name,s3);
+    const folder_exits = await checkFolderExists(bucketName, Campaign_Folder,s3);
     // console.log(folder_exits);
 
     // var totalFiles = await getTotalFilesInFolder(bucketName, Organisation_Name,s3);
     // console.log(totalFiles);
     if (folder_exits) {
 
-      const files = await s3.listObjectsV2({ Bucket: bucketName, Prefix: Organisation_Name }).promise();
-      const fileNames = files.Contents.map((file) => file.Key.split('/').pop().split('.')[0]);
-      const numericalFileNames = fileNames.filter((fileName) => /^\d+$/.test(fileName));
-      const largestNumber = numericalFileNames.reduce((acc, cur) => Math.max(acc, cur), 0);
-      const fileName = `${Number(largestNumber) + 1}`;
+
+      const fileName = token_id;
       console.log(fileName);
         
         const fileParams = {
             Bucket: bucketName,
-            Key: `${Organisation_Name}${fileName}.json`,
+            Key: `${Campaign_Folder}${fileName}.json`,
             Body: '{}',
         };
         const new_data = {[fileName]: data};
         await s3.upload(fileParams).promise();
-        await addDataToS3Organisation(bucketName, Organisation_Name, new_data,s3,fileParams);
-        const result= await readS3Data(bucketName, fileName, Organisation_Name, s3);
+        await addDataToS3Organisation(bucketName, Campaign_Folder, new_data,s3,fileParams);
+        const result= await readS3Data(bucketName, fileName, Campaign_Folder, s3);
         console.log('this is the Data stored in the file:',result);
      
-        return `Folder ${Organisation_Name} already exists. New JSON file added to the folder.`;
+        return `Folder ${Campaign_Folder} already exists. New Discount file added to the folder.`;
         
     } else {
         const folderParams = {
             Bucket: bucketName,
-            Key: Organisation_Name,
+            Key: Campaign_Folder,
             Body: '',
         };
         const fileParams = {
             Bucket: bucketName,
-            Key: `${Organisation_Name}1.json`,
+            Key: `${Campaign_Folder}${fileName}.json`,
             Body: '{}',
         };
         await s3.upload(folderParams).promise();
         await s3.upload(fileParams).promise();
-        await addDataToS3Organisation(bucketName, Organisation_Name, data,s3,fileParams);
-        const result= await readS3Data(bucketName, '1', Organisation_Name, s3);
+        await addDataToS3Organisation(bucketName, Campaign_Folder, data,s3,fileParams);
+        const result= await readS3Data(bucketName, fileName, Campaign_Folder, s3);
         console.log('this is the Data stored in the file:',result);
-        return `Folder ${Organisation_Name} created successfully with new JSON file.`;
+        return `Folder ${Campaign_Folder} created successfully with new JSON file.`;
     }
 }
 
@@ -124,7 +121,7 @@ const bucketName = 'project-astra-bucket1';
 //         ] 
 //     } 
 // };
-// createS3Token(bucketName,'toysrus-nfts2', data)
+// createS3Token(bucketName,'toysrus-nfts', data)
 //   .then((message) => {
 //     console.log(message);
 //   })

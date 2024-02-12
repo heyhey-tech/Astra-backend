@@ -9,22 +9,20 @@ const contractAddress = "0xCeA7c81e6755f77EcB8de8a2538a68cbC9263597";
 // Create a contract instance
 const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-async function getTokenLimit(index) {
+async function getTokenCounter() {
     try {
         // Call the automatically generated getter for the mapping
-        const value = await contract.tokenAirdropLimits(index);
-      
+        const value = await contract.tokenIdCounter();
+        
+
         return value.toString();
     } catch (error) {
         console.error(error);
     }
 }
 
-// getTokenLimit(1).then((value) => {
-//     console.log(value);
-// });
 
 
 
 
-module.exports = getTokenLimit;
+module.exports = getTokenCounter;
