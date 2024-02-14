@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const readAllS3Folders = require('./Read_Folders');
 
 require('dotenv').config({ path: '.env'});
 
@@ -57,8 +58,19 @@ async function readAllS3Files(org_name,folderName) {
 
 // async function main() {
 //     const org_name = "toysrus-nfts";
-//     const content = await readAllS3Files(org_name);
-//     console.log(content);
+//     const folders= await readAllS3Folders(org_name);
+//     console.log(folders);
+//     var merged;
+//     for (const folder of folders) {
+//       const content = await readAllS3Files(org_name,folder);
+//       console.log("For folder:",folder);
+//       console.log("Content:",content);
+
+//       merged={...merged,...content};
+//     }
+
+//     console.log(merged);
+//     // console.log(content);
  
 //   }
 // main();

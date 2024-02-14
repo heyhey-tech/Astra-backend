@@ -5,8 +5,8 @@ const getPasswordFromDB = require("../Database_scripts/Scripts/RDS/getPasswordFr
 const crypto = require('crypto');
 const web3 = require('web3');
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
-const readS3Data = require("../Database_scripts/Scripts/Data_read");
-const fetchAllDiscounts=require("./displayAll");
+const readAllS3Folders = require("../Database_scripts/Scripts/Read_Folders");
+const readAllS3Files = require("../Database_scripts/Scripts/Real_all_files");
 require('dotenv').config({ path: '.env'});
 const contractAddress = process.env.CONTRACT_ADDRESS
 const host = "http://a814b333b2aa8498f858d31160ffc39c-1657358876.ap-south-1.elb.amazonaws.com/rpc-1";
@@ -49,6 +49,20 @@ function getTokenData(data, tokenId) {
 }
 // const tokenData = getTokenData(data, tokenId);
 
+//gets all the token details of all the campaigns in an organisation
+async function getAllTokens(org_name){
+  const folders= await readAllS3Folders(org_name);
+  var merged;
+    for (const folder of folders) {
+      const content = await readAllS3Files(org_name,folder);
+      console.log("For folder:",folder);
+      console.log("Content:",content);
+
+      merged={...merged,...content};
+    }
+  return merged;
+
+}
 
 async function getBalance(email) {
     let password;
@@ -72,7 +86,7 @@ async function getBalance(email) {
   
 
     const org_name = "toysrus-nfts";
-    const content = await fetchAllDiscounts(org_name);
+    const content = await getAllTokens(org_name);
 
 
     const contentLength = Object.keys(content).length;
@@ -121,10 +135,10 @@ async function getBalance(email) {
 
 
 
-// async function main(){
-
-
-// }
-// main();
-
+// async function main() {
+//     const email = "javidaasif@gmail.com";
+//     const result = await getBalance(email);
+//     console.log(result);
+//   }
+// main(); 
 module.exports = getBalance;

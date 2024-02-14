@@ -31,8 +31,6 @@ async function createS3Campaign(bucketName,Organisation_name, Campaign_name) {
   // const accessKeyId= process.env.ACCESS_KEY;
   // const secretAccessKey= process.env.SECRET;
 
-  console.log(access_key);
-  console.log(secret_key);
 
   const Campaign_Folder = `${Organisation_name}/${Campaign_name}/`
   const s3 = new AWS.S3({
@@ -64,14 +62,14 @@ async function createS3Campaign(bucketName,Organisation_name, Campaign_name) {
     }
 }
 
-const bucketName = 'project-astra-bucket1';
+// const bucketName = 'project-astra-bucket1';
 
-createS3Campaign(bucketName,'toysrus-nfts','campaign1').then((message)=>{
-    console.log(message);
-    })
-    .catch((err)=>{
-        console.log(err);
-    });
+// createS3Campaign(bucketName,'toysrus-nfts','campaign1').then((message)=>{
+//     console.log(message);
+//     })
+//     .catch((err)=>{
+//         console.log(err);
+//     });
 
 
 module.exports = createS3Campaign;  

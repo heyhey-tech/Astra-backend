@@ -41,12 +41,12 @@ async function readAllS3Folders(org_name) {
 }
 
 
-async function main() {
-    const org_name = "toysrus-nfts";
-    const content = await readAllS3Folders(org_name);
-    console.log(content);
+// async function main() {
+//     const org_name = "toysrus-nfts";
+//     const content = await readAllS3Folders(org_name);
+//     console.log(content);
  
-  }
-main();
+//   }
+// main();
 
 module.exports = readAllS3Folders;
