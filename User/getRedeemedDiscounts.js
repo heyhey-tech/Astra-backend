@@ -7,7 +7,9 @@ const { access } = require("fs-extra");
 const checkUserInDB = require("../Database_scripts/Scripts/RDS/checkUserPresent");  
 const crypto = require('crypto');
 const web3 = require('web3');
-const readS3Data = require("../Database_scripts/Scripts/Data_read");
+// const readS3Data = require("../Database_scripts/Scripts/Data_read");
+const readAllS3Folders = require("../Database_scripts/Scripts/Read_Folders");
+const readAllS3Files = require("../Database_scripts/Scripts/Real_all_files");
 
 
 
@@ -15,6 +17,22 @@ const readS3Data = require("../Database_scripts/Scripts/Data_read");
 const provider = new ethers.providers.JsonRpcProvider(host);
 const abi = require("../Contract/Heycoin.json").abi;
 const contract = new ethers.Contract(contractAddress, abi, provider);
+
+
+//gets all the token details of all the campaigns in an organisation
+async function getAllTokens(org_name){
+    const folders= await readAllS3Folders(org_name);
+    var merged;
+      for (const folder of folders) {
+        const content = await readAllS3Files(org_name,folder);
+        console.log("For folder:",folder);
+        console.log("Content:",content);
+  
+        merged={...merged,...content};
+      }
+    return merged;
+  
+  }
 
 /**
  * Fetch and aggregate AirdropSuccessful events from the smart contract.
@@ -50,6 +68,16 @@ async function fetchRedeemedDiscounts(email) {
     const seed = email.concat(password);
     const account = await generateAccount(seed);
     const accountAddress = account.address;
+
+    const org_name = "toysrus-nfts";
+    const content = await getAllTokens(org_name);
+
+
+    const contentLength = Object.keys(content).length;
+    console.log("Length of content:", contentLength);
+
+    const keys= Object.keys(content);
+    console.log("Keys:",keys);
   
     // Fetch events since the contract deployment
     const currentBlock = await provider.getBlockNumber();
@@ -81,9 +109,13 @@ async function fetchRedeemedDiscounts(email) {
 
             if(!tokenIds.includes(tokenID_int)){
             tokenIds.push(tokenID_int);
-            const res_data= await readS3Data('project-astra-bucket1', tokenID_int, 'toysrus-nfts/');
+            console.log("tokenID:",tokenID_int);
+            // const res_data= await readS3Data('project-astra-bucket1', tokenID_int, 'toysrus-nfts/');
             // console.log("data:",res_data)
-            data.push(res_data[tokenID_int.toString()]); 
+                if(content[tokenID_int.toString()]!==undefined){
+                    console.log("Pusing data for tokenid:",tokenID_int,"->",content[tokenID_int.toString()]);
+                    data.push(content[tokenID_int.toString()]); 
+                }
             }else{
                 console.log("tokenID already present")
             }
@@ -118,7 +150,7 @@ async function fetchRedeemedDiscounts(email) {
 // }
 
 // // // Example usage:
-// scheduledFetchAndAggregate("caleb.franklin@gmail.com");
+// scheduledFetchAndAggregate("javidaasif@gmail.com");
 
 // Export the fetchAndAggregateAirdrops function if it needs to be used elsewhere
 module.exports = fetchRedeemedDiscounts;

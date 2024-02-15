@@ -220,10 +220,11 @@ app.post('/brand/edit-discount', async (req, res) => {
     jwt.verify(token, secretKey);
     const file_name = req.body.token_id;
     const org_name = req.body.org_name;
+    const campaign_name = req.body.campaign_name;
     const data= req.body.data;
     try {
         // should return a json of the metadata of all the discounts
-        const results = await edit(file_name,org_name,data);
+        const results = await edit(file_name,org_name,campaign_name,data);
         // console.log("index:",results)
         res.send(results);
       } catch (err) {

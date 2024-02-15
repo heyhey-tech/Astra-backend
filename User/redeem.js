@@ -50,35 +50,38 @@ async function redeem(email, tokenID, org_name) {
     const Pkey = account.privateKey;
     const Folder_name=org_name.concat('/');
 
-    try {
-        const fileContent = await readS3Data('project-astra-bucket1', tokenID, Folder_name);
-        if (fileContent[tokenID].isValid === 'false') {
-            console.log("token not valid");
-            return new Error('Token Not Valid');
-        }else{
+    // try {
+        // const fileContent = await readS3Data('project-astra-bucket1', tokenID, Folder_name);
+        // if (fileContent[tokenID].isValid === 'false') {
+        //     console.log("token not valid");
+        //     return new Error('Token Not Valid');
+        // }else{
             const wallet = new ethers.Wallet(Pkey, provider);
             const contractWithSigner = contract.connect(wallet);
+
         
             // const senderAddress = account.address;    
             // const hash = ethers.utils.solidityKeccak256(['uint256', 'address'], [tokenID, senderAddress]);
             
-            try {
-                const coupon = await readCoupon('project-astra-bucket1');
+    //         try {
+    //             const coupon = await readCoupon('project-astra-bucket1');
                 const res = await contractWithSigner.redeem(tokenID,1, { gasLimit: 1000000 });
-                // console.log("Transaction hash:", res);
-                // console.log(res);
+                console.log("Transaction hash:", res);
+    //             // console.log(res);
                 
-                return coupon;
-            } catch (err) {
-                console.log(err);
-                return err;
-            }
-        }
-    } catch (err) {
-        console.log("returning error:",err);
-        return err;
-    }
+    //             return coupon;
+    //         } catch (err) {
+    //             console.log(err);
+    //             return err;
+    //         }
+    //     }
+    // } catch (err) {
+    //     console.log("returning error:",err);
+    //     return err;
+    // }
 
 }
+
+// redeem('javidaasif@gmail.com', 19, 'toysrus-nfts');
 
 module.exports = redeem;

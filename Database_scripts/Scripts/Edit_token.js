@@ -40,21 +40,21 @@ async function checkFolderExists(bucketName, folderName,s3) {
   }
 
 
-async function editS3Token(bucketName,Organisation_name,fileName, data) {
+async function editS3Token(bucketName,Organisation_name,campaign_name,fileName, data) {
   // const accessKeyId= process.env.ACCESS_KEY;
   // const secretAccessKey= process.env.SECRET;
  
-  const Organisation_Name = `${Organisation_name}/`;
+  const campaign_folder = `${Organisation_name}/${campaign_name}/`;
 
 
   const s3 = new AWS.S3({
   accessKeyId: access_key,
       secretAccessKey: secret_key,
   });
-  console.log(Organisation_Name);
+  console.log(campaign_folder);
 
 
-    const folder_exits = await checkFolderExists(bucketName, Organisation_Name,s3);
+    const folder_exits = await checkFolderExists(bucketName, campaign_folder,s3);
     console.log("folder exists:",folder_exits);
 
 
@@ -62,22 +62,22 @@ async function editS3Token(bucketName,Organisation_name,fileName, data) {
 
         const fileParams = {
             Bucket: bucketName,
-            Key: `${Organisation_Name}${fileName}.json`,
+            Key: `${campaign_folder}${fileName}.json`,
             Body: '{}',
         };
         console.log(fileParams.Key);
         const new_data = {[fileName]: data};
         await s3.upload(fileParams).promise();
-        await addDataToS3Organisation(bucketName, Organisation_Name, new_data,s3,fileParams);
+        await addDataToS3Organisation(bucketName, campaign_folder, new_data,s3,fileParams);
         try{
-        const result= await readS3Data(bucketName, fileName, Organisation_Name, s3);
+        const result= await readS3Data(bucketName, fileName, campaign_folder, s3);
         return result;
         }catch(err){
             return err;
         }
         // console.log('New Data stored in the file:',result);        
     } else {
-       return new Error(`${Organisation_Name} does not exist.`);
+       return new Error(`${campaign_folder} does not exist.`);
     }
 }
 
@@ -85,7 +85,8 @@ const bucketName = 'project-astra-bucket1';
 
 // async function main() {
 //     const org_name = 'toysrus-nfts';
-//     const file_name= '2';
+//     const file_name= '19';
+//     const campaign_name = 'campaign1';
 //     const data={ 
 //         "name": "Discount 2",
 //         "description": "29% discount on selected items",
@@ -95,7 +96,7 @@ const bucketName = 'project-astra-bucket1';
 //         "value": "100",
 //         "hash": "0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0"
 //     };
-//     const content = await editS3Token(bucketName,org_name,file_name,data);
+//     const content = await editS3Token(bucketName,org_name,campaign_name,file_name,data);
 //     console.log(content);
   
 //   }

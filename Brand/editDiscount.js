@@ -6,9 +6,9 @@ const editS3Token = require("../Database_scripts/Scripts/Edit_token");
 
 
 
-async function edit(file_name,org_name,data){
+async function edit(file_name,org_name,campaign_name,data){
     try{
-        const res=await editS3Token('project-astra-bucket1',org_name,file_name, data); 
+        const res=await editS3Token('project-astra-bucket1',org_name,campaign_name,file_name, data); 
         // console.log(res);
         return res;
 
